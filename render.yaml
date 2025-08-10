@@ -3,19 +3,18 @@ services:
     name: enhanced-chat-backend
     env: node
     plan: starter
+    rootDir: ./backend
     buildCommand: npm install
-    startCommand: npm start
+    startCommand: node index.js
     envVars:
       - key: NODE_ENV
         value: production
       - key: PORT
-        value: 5000
+        value: 10000
       - key: MONGODB_URI
-        fromDatabase:
-          name: enhanced-chat-db
-          property: connectionString
+        value: mongodb+srv://adityashirsatrao007:DfawDlVQGJJQk2CP@cluster0.2zrpo0h.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0
       - key: CLERK_SECRET_KEY
-        sync: false
+        value: sk_test_p27bDpGSpXgiBRjlTkiFZRimXgoJdn7NIIrDKNd7nQ
       - key: JWT_SECRET
         generateValue: true
       - key: CORS_ORIGIN
@@ -24,19 +23,16 @@ services:
   - type: web
     name: enhanced-chat-frontend
     env: static
+    rootDir: ./frontend
     buildCommand: npm install && npm run build
-    staticPublishPath: ./dist
+    staticPublishPath: ./build
+    envVars:
+      - key: REACT_APP_API_URL
+        value: https://enhanced-chat-backend.onrender.com
+      - key: REACT_APP_CLERK_PUBLISHABLE_KEY
+        value: pk_test_ZnJhbmstYmFzaWxpc2stOTAuY2xlcmsuYWNjb3VudHMuZGV2JA
     routes:
       - type: rewrite
         source: /*
         destination: /index.html
-    envVars:
-      - key: VITE_API_URL
-        value: https://enhanced-chat-backend.onrender.com
-      - key: VITE_CLERK_PUBLISHABLE_KEY
-        sync: false
-
-databases:
-  - name: enhanced-chat-db
-    databaseName: enhanced_chat
     user: enhanced_chat_user

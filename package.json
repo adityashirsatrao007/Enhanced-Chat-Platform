@@ -2,19 +2,17 @@
   "name": "enhanced-chat-platform",
   "version": "1.0.0",
   "description": "A modern chat platform with MERN stack and Clerk authentication",
-  "main": "index.js",
+  "main": "backend/index.js",
   "scripts": {
     "dev": "concurrently \"npm run server\" \"npm run client\"",
     "server": "cd backend && npm run dev",
     "client": "cd frontend && npm start",
     "build": "cd frontend && npm run build",
     "start": "cd backend && npm start",
-    "install-deps": "npm install && cd backend && npm install && cd ../frontend && npm install"
+    "install-deps": "npm install && cd backend && npm install && cd ../frontend && npm install",
+    "postinstall": "cd backend && npm install"
   },
   "keywords": ["chat", "mern", "clerk", "authentication"],
   "author": "Enhanced Chat Platform",
-  "license": "MIT",
-  "devDependencies": {
-    "concurrently": "^8.2.2"
-  }
+  "license": "MIT"
 }
