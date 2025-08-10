@@ -84,6 +84,17 @@ app.get("/api/health", (req, res) => {
   });
 });
 
+// Root route for debugging
+app.get("/", (req, res) => {
+  if (process.env.NODE_ENV === "production") {
+    const indexPath = path.join(__dirname, "../frontend/build/index.html");
+    console.log("🏠 Root route - serving index.html from:", indexPath);
+    res.sendFile(indexPath);
+  } else {
+    res.json({ message: "Enhanced Chat Platform API - Development Mode" });
+  }
+});
+
 // Routes
 app.use("/api/auth", authRoutes);
 app.use("/api/users", userRoutes);
@@ -92,12 +103,17 @@ app.use("/api/messages", messageRoutes);
 
 // Serve static files in production
 if (process.env.NODE_ENV === "production") {
-  app.use(express.static(path.join(__dirname, "../frontend/build")));
+  const buildPath = path.join(__dirname, "../frontend/build");
+  console.log("📁 Serving static files from:", buildPath);
+  
+  app.use(express.static(buildPath));
 
-  // All non-API routes should serve React app
+  // Catch-all handler: send back React's index.html file for non-API routes
   app.get("*", (req, res) => {
     if (!req.path.startsWith("/api")) {
-      res.sendFile(path.join(__dirname, "../frontend/build/index.html"));
+      const indexPath = path.join(buildPath, "index.html");
+      console.log("🏠 Serving index.html for:", req.path);
+      res.sendFile(indexPath);
     }
   });
 }

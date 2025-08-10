@@ -21,11 +21,15 @@ import ProfilePage from "./pages/ProfilePage";
 import SettingsPage from "./pages/SettingsPage";
 
 // Check if Clerk publishable key exists
-if (!process.env.REACT_APP_CLERK_PUBLISHABLE_KEY) {
+const clerkPubKey = process.env.REACT_APP_CLERK_PUBLISHABLE_KEY;
+
+if (!clerkPubKey) {
+  console.error("Missing REACT_APP_CLERK_PUBLISHABLE_KEY");
+  console.error("Available env vars:", Object.keys(process.env).filter(key => key.startsWith('REACT_APP')));
   throw new Error("Missing Clerk Publishable Key");
 }
 
-const clerkPubKey = process.env.REACT_APP_CLERK_PUBLISHABLE_KEY;
+console.log("✅ Clerk key found:", clerkPubKey.substring(0, 20) + "...");
 
 /**
  * Protected Route Component
