@@ -1,4 +1,4 @@
-import React from "react";
+import React, { Suspense } from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import {
   ClerkProvider,
@@ -15,21 +15,19 @@ import { ChatProvider } from "./contexts/ChatContext";
 
 // Components
 import Layout from "./components/Layout/Layout";
+import LoadingScreen from "./components/LoadingScreen";
+import AppFallback from "./components/AppFallback";
 import HomePage from "./pages/HomePage";
 import ChatPage from "./pages/ChatPage";
 import ProfilePage from "./pages/ProfilePage";
 import SettingsPage from "./pages/SettingsPage";
 
 // Check if Clerk publishable key exists
-const clerkPubKey = process.env.REACT_APP_CLERK_PUBLISHABLE_KEY;
+const clerkPubKey = process.env.REACT_APP_CLERK_PUBLISHABLE_KEY || "pk_test_ZnJhbmstYmFzaWxpc2stOTAuY2xlcmsuYWNjb3VudHMuZGV2JA";
 
-if (!clerkPubKey) {
-  console.error("Missing REACT_APP_CLERK_PUBLISHABLE_KEY");
-  console.error("Available env vars:", Object.keys(process.env).filter(key => key.startsWith('REACT_APP')));
-  throw new Error("Missing Clerk Publishable Key");
-}
-
-console.log("✅ Clerk key found:", clerkPubKey.substring(0, 20) + "...");
+console.log("🔧 Environment:", process.env.NODE_ENV);
+console.log("🔑 Clerk key available:", !!clerkPubKey);
+console.log("🌐 App starting...");
 
 /**
  * Protected Route Component
@@ -51,31 +49,33 @@ const ProtectedRoute = ({ children }) => {
  * Sets up routing, authentication, and global providers
  */
 function App() {
-  return (
-    <ClerkProvider
-      publishableKey={clerkPubKey}
-      appearance={{
-        baseTheme: undefined,
-        variables: {
-          colorPrimary: "#3b82f6",
-          colorBackground: "#ffffff",
-          colorInputBackground: "#ffffff",
-          colorInputText: "#1f2937",
-          fontFamily: "Inter, system-ui, sans-serif",
-          borderRadius: "0.5rem",
-        },
-        elements: {
-          formButtonPrimary:
-            "bg-blue-500 hover:bg-blue-600 text-sm normal-case",
-          card: "shadow-lg",
-          headerTitle: "text-blue-600",
-          headerSubtitle: "text-gray-600",
+  try {
+    return (
+      <ClerkProvider
+        publishableKey={clerkPubKey}
+        appearance={{
+          baseTheme: undefined,
+          variables: {
+            colorPrimary: "#3b82f6",
+            colorBackground: "#ffffff",
+            colorInputBackground: "#ffffff",
+            colorInputText: "#1f2937",
+            fontFamily: "Inter, system-ui, sans-serif",
+            borderRadius: "0.5rem",
+          },
+          elements: {
+            formButtonPrimary:
+              "bg-blue-500 hover:bg-blue-600 text-sm normal-case",
+            card: "shadow-lg",
+            headerTitle: "text-blue-600",
+            headerSubtitle: "text-gray-600",
         },
       }}
     >
       <Router>
         <div className="App">
-          {/* Toast notifications */}
+          <Suspense fallback={<LoadingScreen />}>
+            {/* Toast notifications */}
           <Toaster
             position="top-right"
             toastOptions={{
@@ -174,10 +174,15 @@ function App() {
               }
             />
           </Routes>
+          </Suspense>
         </div>
       </Router>
     </ClerkProvider>
-  );
+    );
+  } catch (error) {
+    console.error("App Error:", error);
+    return <AppFallback />;
+  }
 }
 
 export default App;
