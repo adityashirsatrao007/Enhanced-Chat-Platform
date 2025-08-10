@@ -1,0 +1,28 @@
+{
+  "name": "enhanced-chat-platform-backend",
+  "version": "1.0.0",
+  "description": "Backend for Enhanced Chat Platform",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "nodemon index.js",
+    "build": "echo 'Build completed'"
+  },
+  "dependencies": {
+    "@clerk/express": "^1.0.0",
+    "cors": "^2.8.5",
+    "dotenv": "^16.3.1",
+    "express": "^4.18.2",
+    "mongoose": "^7.5.0",
+    "socket.io": "^4.7.2",
+    "express-rate-limit": "^6.10.0",
+    "helmet": "^7.0.0",
+    "morgan": "^1.10.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.1"
+  },
+  "keywords": ["express", "mongodb", "clerk", "chat"],
+  "author": "Enhanced Chat Platform",
+  "license": "MIT"
+}
