@@ -1,4 +1,4 @@
-const { requireAuth } = require('@clerk/express');
+const { requireAuth } = require("@clerk/express");
 
 /**
  * Middleware to protect routes requiring authentication
@@ -14,15 +14,15 @@ const getUserFromClerk = (req, res, next) => {
     if (req.auth && req.auth.userId) {
       req.user = {
         id: req.auth.userId,
-        ...req.auth
+        ...req.auth,
       };
     }
     next();
   } catch (error) {
-    console.error('Error extracting user from Clerk:', error);
+    console.error("Error extracting user from Clerk:", error);
     return res.status(401).json({
       success: false,
-      message: 'Authentication failed'
+      message: "Authentication failed",
     });
   }
 };
@@ -35,20 +35,20 @@ const adminOnly = (req, res, next) => {
   try {
     // Check if user has admin role in Clerk metadata
     const userRoles = req.auth?.sessionClaims?.metadata?.roles || [];
-    
-    if (!userRoles.includes('admin')) {
+
+    if (!userRoles.includes("admin")) {
       return res.status(403).json({
         success: false,
-        message: 'Admin access required'
+        message: "Admin access required",
       });
     }
-    
+
     next();
   } catch (error) {
-    console.error('Error checking admin role:', error);
+    console.error("Error checking admin role:", error);
     return res.status(500).json({
       success: false,
-      message: 'Error checking permissions'
+      message: "Error checking permissions",
     });
   }
 };
@@ -62,7 +62,7 @@ const optionalAuth = (req, res, next) => {
     if (req.auth && req.auth.userId) {
       req.user = {
         id: req.auth.userId,
-        ...req.auth
+        ...req.auth,
       };
     }
     next();
@@ -76,5 +76,5 @@ module.exports = {
   protect,
   getUserFromClerk,
   adminOnly,
-  optionalAuth
+  optionalAuth,
 };

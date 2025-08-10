@@ -1,8 +1,8 @@
-const express = require('express');
-const { protect, getUserFromClerk } = require('../middleware/auth');
-const Message = require('../models/Message');
-const Chat = require('../models/Chat');
-const User = require('../models/User');
+const express = require("express");
+const { protect, getUserFromClerk } = require("../middleware/auth");
+const Message = require("../models/Message");
+const Chat = require("../models/Chat");
+const User = require("../models/User");
 const router = express.Router();
 
 /**
@@ -10,7 +10,7 @@ const router = express.Router();
  * @desc    Get messages for a specific chat
  * @access  Private
  */
-router.get('/:chatId', protect, getUserFromClerk, async (req, res) => {
+router.get("/:chatId", protect, getUserFromClerk, async (req, res) => {
   try {
     const { chatId } = req.params;
     const { userId } = req.auth;
@@ -21,7 +21,7 @@ router.get('/:chatId', protect, getUserFromClerk, async (req, res) => {
     if (!currentUser) {
       return res.status(404).json({
         success: false,
-        message: 'User not found'
+        message: "User not found",
       });
     }
 
@@ -30,23 +30,27 @@ router.get('/:chatId', protect, getUserFromClerk, async (req, res) => {
     if (!chat) {
       return res.status(404).json({
         success: false,
-        message: 'Chat not found'
+        message: "Chat not found",
       });
     }
 
     const isParticipant = chat.participants.some(
-      p => p.user.toString() === currentUser._id.toString()
+      (p) => p.user.toString() === currentUser._id.toString()
     );
 
     if (!isParticipant) {
       return res.status(403).json({
         success: false,
-        message: 'Access denied'
+        message: "Access denied",
       });
     }
 
     // Get messages
-    const messages = await Message.getChatMessages(chatId, parseInt(page), parseInt(limit));
+    const messages = await Message.getChatMessages(
+      chatId,
+      parseInt(page),
+      parseInt(limit)
+    );
 
     // Update last read for the user
     await chat.updateLastRead(currentUser._id);
@@ -58,16 +62,15 @@ router.get('/:chatId', protect, getUserFromClerk, async (req, res) => {
         pagination: {
           page: parseInt(page),
           limit: parseInt(limit),
-          hasMore: messages.length === parseInt(limit)
-        }
-      }
+          hasMore: messages.length === parseInt(limit),
+        },
+      },
     });
-
   } catch (error) {
-    console.error('Error getting messages:', error);
+    console.error("Error getting messages:", error);
     res.status(500).json({
       success: false,
-      message: 'Error retrieving messages'
+      message: "Error retrieving messages",
     });
   }
 });
@@ -77,7 +80,7 @@ router.get('/:chatId', protect, getUserFromClerk, async (req, res) => {
  * @desc    Send a new message
  * @access  Private
  */
-router.post('/:chatId', protect, getUserFromClerk, async (req, res) => {
+router.post("/:chatId", protect, getUserFromClerk, async (req, res) => {
   try {
     const { chatId } = req.params;
     const { userId } = req.auth;
@@ -88,7 +91,7 @@ router.post('/:chatId', protect, getUserFromClerk, async (req, res) => {
     if (!currentUser) {
       return res.status(404).json({
         success: false,
-        message: 'User not found'
+        message: "User not found",
       });
     }
 
@@ -97,18 +100,18 @@ router.post('/:chatId', protect, getUserFromClerk, async (req, res) => {
     if (!chat) {
       return res.status(404).json({
         success: false,
-        message: 'Chat not found'
+        message: "Chat not found",
       });
     }
 
     const isParticipant = chat.participants.some(
-      p => p.user.toString() === currentUser._id.toString()
+      (p) => p.user.toString() === currentUser._id.toString()
     );
 
     if (!isParticipant) {
       return res.status(403).json({
         success: false,
-        message: 'Access denied'
+        message: "Access denied",
       });
     }
 
@@ -116,7 +119,7 @@ router.post('/:chatId', protect, getUserFromClerk, async (req, res) => {
     if (!content || !content.text || content.text.trim().length === 0) {
       return res.status(400).json({
         success: false,
-        message: 'Message content is required'
+        message: "Message content is required",
       });
     }
 
@@ -126,10 +129,10 @@ router.post('/:chatId', protect, getUserFromClerk, async (req, res) => {
       sender: currentUser._id,
       content: {
         text: content.text.trim(),
-        type: content.type || 'text',
-        file: content.file || undefined
+        type: content.type || "text",
+        file: content.file || undefined,
       },
-      replyTo: replyTo || undefined
+      replyTo: replyTo || undefined,
     });
 
     // Update chat's last message and activity
@@ -138,22 +141,21 @@ router.post('/:chatId', protect, getUserFromClerk, async (req, res) => {
     await chat.save();
 
     // Populate message for response
-    await message.populate('sender', 'username firstName lastName avatar');
+    await message.populate("sender", "username firstName lastName avatar");
     if (replyTo) {
-      await message.populate('replyTo', 'content.text sender');
+      await message.populate("replyTo", "content.text sender");
     }
 
     res.status(201).json({
       success: true,
-      message: 'Message sent successfully',
-      data: { message }
+      message: "Message sent successfully",
+      data: { message },
     });
-
   } catch (error) {
-    console.error('Error sending message:', error);
+    console.error("Error sending message:", error);
     res.status(500).json({
       success: false,
-      message: 'Error sending message'
+      message: "Error sending message",
     });
   }
 });
@@ -163,7 +165,7 @@ router.post('/:chatId', protect, getUserFromClerk, async (req, res) => {
  * @desc    Edit a message
  * @access  Private
  */
-router.put('/:messageId', protect, getUserFromClerk, async (req, res) => {
+router.put("/:messageId", protect, getUserFromClerk, async (req, res) => {
   try {
     const { messageId } = req.params;
     const { userId } = req.auth;
@@ -174,7 +176,7 @@ router.put('/:messageId', protect, getUserFromClerk, async (req, res) => {
     if (!currentUser) {
       return res.status(404).json({
         success: false,
-        message: 'User not found'
+        message: "User not found",
       });
     }
 
@@ -183,7 +185,7 @@ router.put('/:messageId', protect, getUserFromClerk, async (req, res) => {
     if (!message) {
       return res.status(404).json({
         success: false,
-        message: 'Message not found'
+        message: "Message not found",
       });
     }
 
@@ -191,7 +193,7 @@ router.put('/:messageId', protect, getUserFromClerk, async (req, res) => {
     if (message.sender.toString() !== currentUser._id.toString()) {
       return res.status(403).json({
         success: false,
-        message: 'You can only edit your own messages'
+        message: "You can only edit your own messages",
       });
     }
 
@@ -200,7 +202,7 @@ router.put('/:messageId', protect, getUserFromClerk, async (req, res) => {
     if (message.createdAt < twentyFourHoursAgo) {
       return res.status(400).json({
         success: false,
-        message: 'Message is too old to edit'
+        message: "Message is too old to edit",
       });
     }
 
@@ -208,7 +210,7 @@ router.put('/:messageId', protect, getUserFromClerk, async (req, res) => {
     if (!content || content.trim().length === 0) {
       return res.status(400).json({
         success: false,
-        message: 'Message content is required'
+        message: "Message content is required",
       });
     }
 
@@ -217,15 +219,14 @@ router.put('/:messageId', protect, getUserFromClerk, async (req, res) => {
 
     res.status(200).json({
       success: true,
-      message: 'Message updated successfully',
-      data: { message }
+      message: "Message updated successfully",
+      data: { message },
     });
-
   } catch (error) {
-    console.error('Error editing message:', error);
+    console.error("Error editing message:", error);
     res.status(500).json({
       success: false,
-      message: 'Error editing message'
+      message: "Error editing message",
     });
   }
 });
@@ -235,7 +236,7 @@ router.put('/:messageId', protect, getUserFromClerk, async (req, res) => {
  * @desc    Delete a message
  * @access  Private
  */
-router.delete('/:messageId', protect, getUserFromClerk, async (req, res) => {
+router.delete("/:messageId", protect, getUserFromClerk, async (req, res) => {
   try {
     const { messageId } = req.params;
     const { userId } = req.auth;
@@ -245,7 +246,7 @@ router.delete('/:messageId', protect, getUserFromClerk, async (req, res) => {
     if (!currentUser) {
       return res.status(404).json({
         success: false,
-        message: 'User not found'
+        message: "User not found",
       });
     }
 
@@ -254,24 +255,24 @@ router.delete('/:messageId', protect, getUserFromClerk, async (req, res) => {
     if (!message) {
       return res.status(404).json({
         success: false,
-        message: 'Message not found'
+        message: "Message not found",
       });
     }
 
     // Check if user is the sender or chat admin
     const isOwner = message.sender.toString() === currentUser._id.toString();
-    
+
     // Get chat to check if user is admin
     const chat = await Chat.findById(message.chat);
     const userParticipant = chat.participants.find(
-      p => p.user.toString() === currentUser._id.toString()
+      (p) => p.user.toString() === currentUser._id.toString()
     );
-    const isAdmin = userParticipant && userParticipant.role === 'admin';
+    const isAdmin = userParticipant && userParticipant.role === "admin";
 
     if (!isOwner && !isAdmin) {
       return res.status(403).json({
         success: false,
-        message: 'You can only delete your own messages or be a chat admin'
+        message: "You can only delete your own messages or be a chat admin",
       });
     }
 
@@ -280,14 +281,13 @@ router.delete('/:messageId', protect, getUserFromClerk, async (req, res) => {
 
     res.status(200).json({
       success: true,
-      message: 'Message deleted successfully'
+      message: "Message deleted successfully",
     });
-
   } catch (error) {
-    console.error('Error deleting message:', error);
+    console.error("Error deleting message:", error);
     res.status(500).json({
       success: false,
-      message: 'Error deleting message'
+      message: "Error deleting message",
     });
   }
 });
@@ -297,107 +297,115 @@ router.delete('/:messageId', protect, getUserFromClerk, async (req, res) => {
  * @desc    Add reaction to a message
  * @access  Private
  */
-router.post('/:messageId/react', protect, getUserFromClerk, async (req, res) => {
-  try {
-    const { messageId } = req.params;
-    const { userId } = req.auth;
-    const { emoji } = req.body;
+router.post(
+  "/:messageId/react",
+  protect,
+  getUserFromClerk,
+  async (req, res) => {
+    try {
+      const { messageId } = req.params;
+      const { userId } = req.auth;
+      const { emoji } = req.body;
 
-    // Get current user
-    const currentUser = await User.findOne({ clerkId: userId });
-    if (!currentUser) {
-      return res.status(404).json({
+      // Get current user
+      const currentUser = await User.findOne({ clerkId: userId });
+      if (!currentUser) {
+        return res.status(404).json({
+          success: false,
+          message: "User not found",
+        });
+      }
+
+      // Get message
+      const message = await Message.findById(messageId);
+      if (!message) {
+        return res.status(404).json({
+          success: false,
+          message: "Message not found",
+        });
+      }
+
+      // Validate emoji
+      if (!emoji || emoji.trim().length === 0) {
+        return res.status(400).json({
+          success: false,
+          message: "Emoji is required",
+        });
+      }
+
+      // Add reaction
+      await message.addReaction(currentUser._id, emoji.trim());
+
+      res.status(200).json({
+        success: true,
+        message: "Reaction added successfully",
+      });
+    } catch (error) {
+      console.error("Error adding reaction:", error);
+      res.status(500).json({
         success: false,
-        message: 'User not found'
+        message: "Error adding reaction",
       });
     }
-
-    // Get message
-    const message = await Message.findById(messageId);
-    if (!message) {
-      return res.status(404).json({
-        success: false,
-        message: 'Message not found'
-      });
-    }
-
-    // Validate emoji
-    if (!emoji || emoji.trim().length === 0) {
-      return res.status(400).json({
-        success: false,
-        message: 'Emoji is required'
-      });
-    }
-
-    // Add reaction
-    await message.addReaction(currentUser._id, emoji.trim());
-
-    res.status(200).json({
-      success: true,
-      message: 'Reaction added successfully'
-    });
-
-  } catch (error) {
-    console.error('Error adding reaction:', error);
-    res.status(500).json({
-      success: false,
-      message: 'Error adding reaction'
-    });
   }
-});
+);
 
 /**
  * @route   DELETE /api/messages/:messageId/react
  * @desc    Remove reaction from a message
  * @access  Private
  */
-router.delete('/:messageId/react', protect, getUserFromClerk, async (req, res) => {
-  try {
-    const { messageId } = req.params;
-    const { userId } = req.auth;
-    const { emoji } = req.body;
+router.delete(
+  "/:messageId/react",
+  protect,
+  getUserFromClerk,
+  async (req, res) => {
+    try {
+      const { messageId } = req.params;
+      const { userId } = req.auth;
+      const { emoji } = req.body;
 
-    // Get current user
-    const currentUser = await User.findOne({ clerkId: userId });
-    if (!currentUser) {
-      return res.status(404).json({
+      // Get current user
+      const currentUser = await User.findOne({ clerkId: userId });
+      if (!currentUser) {
+        return res.status(404).json({
+          success: false,
+          message: "User not found",
+        });
+      }
+
+      // Get message
+      const message = await Message.findById(messageId);
+      if (!message) {
+        return res.status(404).json({
+          success: false,
+          message: "Message not found",
+        });
+      }
+
+      // Remove reaction
+      await message.removeReaction(currentUser._id, emoji);
+
+      res.status(200).json({
+        success: true,
+        message: "Reaction removed successfully",
+      });
+    } catch (error) {
+      console.error("Error removing reaction:", error);
+      res.status(500).json({
         success: false,
-        message: 'User not found'
+        message: "Error removing reaction",
       });
     }
-
-    // Get message
-    const message = await Message.findById(messageId);
-    if (!message) {
-      return res.status(404).json({
-        success: false,
-        message: 'Message not found'
-      });
-    }
-
-    // Remove reaction
-    await message.removeReaction(currentUser._id, emoji);
-
-    res.status(200).json({
-      success: true,
-      message: 'Reaction removed successfully'
-    });
-
-  } catch (error) {
-    console.error('Error removing reaction:', error);
-    res.status(500).json({
-      success: false,
-      message: 'Error removing reaction'
-    });
   }
-});
+);
 
 /**
  * @route   POST /api/messages/:messageId/read
  * @desc    Mark message as read
  * @access  Private
  */
-router.post('/:messageId/read', protect, getUserFromClerk, async (req, res) => {
+router.post("/:messageId/read", protect, getUserFromClerk, async (req, res) => {
   try {
     const { messageId } = req.params;
     const { userId } = req.auth;
@@ -407,7 +415,7 @@ router.post('/:messageId/read', protect, getUserFromClerk, async (req, res) => {
     if (!currentUser) {
       return res.status(404).json({
         success: false,
-        message: 'User not found'
+        message: "User not found",
       });
     }
 
@@ -416,7 +424,7 @@ router.post('/:messageId/read', protect, getUserFromClerk, async (req, res) => {
     if (!message) {
       return res.status(404).json({
         success: false,
-        message: 'Message not found'
+        message: "Message not found",
       });
     }
 
@@ -425,14 +433,13 @@ router.post('/:messageId/read', protect, getUserFromClerk, async (req, res) => {
 
     res.status(200).json({
       success: true,
-      message: 'Message marked as read'
+      message: "Message marked as read",
     });
-
   } catch (error) {
-    console.error('Error marking message as read:', error);
+    console.error("Error marking message as read:", error);
     res.status(500).json({
       success: false,
-      message: 'Error marking message as read'
+      message: "Error marking message as read",
     });
   }
 });

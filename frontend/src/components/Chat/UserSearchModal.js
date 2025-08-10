@@ -1,21 +1,26 @@
-import React, { useState, useEffect, useCallback } from 'react';
-import { MagnifyingGlassIcon, XMarkIcon, UserPlusIcon, CheckIcon } from '@heroicons/react/24/outline';
-import { useChat } from '../../contexts/ChatContext';
-import { useAuth } from '@clerk/clerk-react';
-import { userAPI, chatAPI, setAuthToken } from '../../services/api';
-import toast from 'react-hot-toast';
+import React, { useState, useEffect, useCallback } from "react";
+import {
+  MagnifyingGlassIcon,
+  XMarkIcon,
+  UserPlusIcon,
+  CheckIcon,
+} from "@heroicons/react/24/outline";
+import { useChat } from "../../contexts/ChatContext";
+import { useAuth } from "@clerk/clerk-react";
+import { userAPI, chatAPI, setAuthToken } from "../../services/api";
+import toast from "react-hot-toast";
 
 /**
  * User Search Modal Component
  * Modal for searching and adding users to start new conversations
  */
 const UserSearchModal = ({ isOpen, onClose }) => {
-  const [searchQuery, setSearchQuery] = useState('');
+  const [searchQuery, setSearchQuery] = useState("");
   const [searchResults, setSearchResults] = useState([]);
   const [loading, setLoading] = useState(false);
   const [selectedUsers, setSelectedUsers] = useState([]);
   const [creatingChat, setCreatingChat] = useState(false);
-  
+
   const { fetchChats } = useChat();
   const { getToken } = useAuth();
 
@@ -33,13 +38,13 @@ const UserSearchModal = ({ isOpen, onClose }) => {
         if (token) {
           // Set the auth token for API calls
           setAuthToken(token);
-          
+
           const results = await userAPI.searchUsers(query);
           setSearchResults(results.data || []);
         }
       } catch (error) {
-        console.error('Search error:', error);
-        toast.error('Failed to search users');
+        console.error("Search error:", error);
+        toast.error("Failed to search users");
       } finally {
         setLoading(false);
       }
@@ -55,17 +60,17 @@ const UserSearchModal = ({ isOpen, onClose }) => {
   // Reset state when modal opens/closes
   useEffect(() => {
     if (isOpen) {
-      setSearchQuery('');
+      setSearchQuery("");
       setSearchResults([]);
       setSelectedUsers([]);
     }
   }, [isOpen]);
 
   const handleUserSelect = (user) => {
-    setSelectedUsers(prev => {
-      const isSelected = prev.find(u => u._id === user._id);
+    setSelectedUsers((prev) => {
+      const isSelected = prev.find((u) => u._id === user._id);
       if (isSelected) {
-        return prev.filter(u => u._id !== user._id);
+        return prev.filter((u) => u._id !== user._id);
       } else {
         return [...prev, user];
       }
@@ -74,7 +79,7 @@ const UserSearchModal = ({ isOpen, onClose }) => {
 
   const handleCreateChat = async () => {
     if (selectedUsers.length === 0) {
-      toast.error('Please select at least one user');
+      toast.error("Please select at least one user");
       return;
     }
 
@@ -84,27 +89,29 @@ const UserSearchModal = ({ isOpen, onClose }) => {
       if (token) {
         // Set the auth token for API calls
         setAuthToken(token);
-        
-        const participants = selectedUsers.map(user => user._id);
-        
+
+        const participants = selectedUsers.map((user) => user._id);
+
         // Create individual chats for each selected user
-        const chatPromises = participants.map(participantId =>
+        const chatPromises = participants.map((participantId) =>
           chatAPI.createChat({ participants: [participantId], isGroup: false })
         );
 
         await Promise.all(chatPromises);
       }
-      
-      toast.success(`${selectedUsers.length > 1 ? 'Chats' : 'Chat'} created successfully!`);
-      
+
+      toast.success(
+        `${selectedUsers.length > 1 ? "Chats" : "Chat"} created successfully!`
+      );
+
       // Refresh chats list
       await fetchChats();
-      
+
       // Close modal
       onClose();
     } catch (error) {
-      console.error('Create chat error:', error);
-      toast.error('Failed to create chat');
+      console.error("Create chat error:", error);
+      toast.error("Failed to create chat");
     } finally {
       setCreatingChat(false);
     }
@@ -112,7 +119,7 @@ const UserSearchModal = ({ isOpen, onClose }) => {
 
   const handleCreateGroupChat = async () => {
     if (selectedUsers.length < 2) {
-      toast.error('Group chat requires at least 2 users');
+      toast.error("Group chat requires at least 2 users");
       return;
     }
 
@@ -121,28 +128,28 @@ const UserSearchModal = ({ isOpen, onClose }) => {
       const token = await getToken();
       if (token) {
         // Set the auth token for API calls
-        const { setAuthToken } = await import('../../services/api');
+        const { setAuthToken } = await import("../../services/api");
         setAuthToken(token);
-        
-        const participants = selectedUsers.map(user => user._id);
-        
-        await chatAPI.createChat({ 
-          participants, 
+
+        const participants = selectedUsers.map((user) => user._id);
+
+        await chatAPI.createChat({
+          participants,
           isGroup: true,
-          name: `Group with ${selectedUsers.map(u => u.name).join(', ')}`
+          name: `Group with ${selectedUsers.map((u) => u.name).join(", ")}`,
         });
       }
-      
-      toast.success('Group chat created successfully!');
-      
+
+      toast.success("Group chat created successfully!");
+
       // Refresh chats list
       await fetchChats();
-      
+
       // Close modal
       onClose();
     } catch (error) {
-      console.error('Create group chat error:', error);
-      toast.error('Failed to create group chat');
+      console.error("Create group chat error:", error);
+      toast.error("Failed to create group chat");
     } finally {
       setCreatingChat(false);
     }
@@ -155,7 +162,9 @@ const UserSearchModal = ({ isOpen, onClose }) => {
       <div className="bg-white rounded-lg shadow-xl w-full max-w-md max-h-[80vh] flex flex-col">
         {/* Header */}
         <div className="flex items-center justify-between p-4 border-b">
-          <h2 className="text-lg font-semibold text-gray-900">Start New Chat</h2>
+          <h2 className="text-lg font-semibold text-gray-900">
+            Start New Chat
+          </h2>
           <button
             onClick={onClose}
             className="p-1 hover:bg-gray-100 rounded-full transition-colors"
@@ -209,7 +218,9 @@ const UserSearchModal = ({ isOpen, onClose }) => {
           ) : searchResults.length > 0 ? (
             <div className="py-2">
               {searchResults.map((user) => {
-                const isSelected = selectedUsers.find(u => u._id === user._id);
+                const isSelected = selectedUsers.find(
+                  (u) => u._id === user._id
+                );
                 return (
                   <button
                     key={user._id}
@@ -232,7 +243,9 @@ const UserSearchModal = ({ isOpen, onClose }) => {
                       )}
                     </div>
                     <div className="flex-1 text-left">
-                      <p className="text-sm font-medium text-gray-900">{user.name}</p>
+                      <p className="text-sm font-medium text-gray-900">
+                        {user.name}
+                      </p>
                       <p className="text-sm text-gray-500">{user.email}</p>
                     </div>
                     {isSelected && (
@@ -272,10 +285,10 @@ const UserSearchModal = ({ isOpen, onClose }) => {
                     <span>Creating...</span>
                   </div>
                 ) : (
-                  `Start Chat${selectedUsers.length > 1 ? 's' : ''}`
+                  `Start Chat${selectedUsers.length > 1 ? "s" : ""}`
                 )}
               </button>
-              
+
               {selectedUsers.length > 1 && (
                 <button
                   onClick={handleCreateGroupChat}

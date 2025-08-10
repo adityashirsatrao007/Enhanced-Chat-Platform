@@ -1,15 +1,15 @@
-import React, { useState } from 'react';
-import { useAuth } from '../contexts/AuthContext';
-import { 
-  BellIcon, 
-  EyeIcon, 
-  MoonIcon, 
-  SunIcon, 
+import React, { useState } from "react";
+import { useAuth } from "../contexts/AuthContext";
+import {
+  BellIcon,
+  EyeIcon,
+  MoonIcon,
+  SunIcon,
   ComputerDesktopIcon,
-  ShieldCheckIcon
-} from '@heroicons/react/24/outline';
-import LoadingSpinner from '../components/UI/LoadingSpinner';
-import toast from 'react-hot-toast';
+  ShieldCheckIcon,
+} from "@heroicons/react/24/outline";
+import LoadingSpinner from "../components/UI/LoadingSpinner";
+import toast from "react-hot-toast";
 
 /**
  * Settings Page Component
@@ -19,16 +19,16 @@ const SettingsPage = () => {
   const { user, updateProfile, loading } = useAuth();
   const [saving, setSaving] = useState(false);
   const [preferences, setPreferences] = useState({
-    theme: 'auto',
+    theme: "auto",
     notifications: {
       email: true,
       push: true,
-      mentions: true
+      mentions: true,
     },
     privacy: {
       showOnlineStatus: true,
-      showLastSeen: true
-    }
+      showLastSeen: true,
+    },
   });
 
   // Initialize preferences when user data is available
@@ -39,29 +39,29 @@ const SettingsPage = () => {
   }, [user]);
 
   const handleThemeChange = (theme) => {
-    setPreferences(prev => ({
+    setPreferences((prev) => ({
       ...prev,
-      theme
+      theme,
     }));
   };
 
   const handleNotificationChange = (key) => {
-    setPreferences(prev => ({
+    setPreferences((prev) => ({
       ...prev,
       notifications: {
         ...prev.notifications,
-        [key]: !prev.notifications[key]
-      }
+        [key]: !prev.notifications[key],
+      },
     }));
   };
 
   const handlePrivacyChange = (key) => {
-    setPreferences(prev => ({
+    setPreferences((prev) => ({
       ...prev,
       privacy: {
         ...prev.privacy,
-        [key]: !prev.privacy[key]
-      }
+        [key]: !prev.privacy[key],
+      },
     }));
   };
 
@@ -69,7 +69,7 @@ const SettingsPage = () => {
     try {
       setSaving(true);
       await updateProfile({ preferences });
-      toast.success('Settings saved successfully');
+      toast.success("Settings saved successfully");
     } catch (error) {
       // Error is handled in the context
     } finally {
@@ -86,9 +86,9 @@ const SettingsPage = () => {
   }
 
   const themeOptions = [
-    { value: 'light', label: 'Light', icon: SunIcon },
-    { value: 'dark', label: 'Dark', icon: MoonIcon },
-    { value: 'auto', label: 'System', icon: ComputerDesktopIcon }
+    { value: "light", label: "Light", icon: SunIcon },
+    { value: "dark", label: "Dark", icon: MoonIcon },
+    { value: "auto", label: "System", icon: ComputerDesktopIcon },
   ];
 
   return (
@@ -126,9 +126,10 @@ const SettingsPage = () => {
                       onClick={() => handleThemeChange(option.value)}
                       className={`
                         relative flex flex-col items-center p-4 rounded-lg border-2 transition-all duration-200
-                        ${preferences.theme === option.value
-                          ? 'border-blue-500 bg-blue-50'
-                          : 'border-gray-200 hover:border-gray-300'
+                        ${
+                          preferences.theme === option.value
+                            ? "border-blue-500 bg-blue-50"
+                            : "border-gray-200 hover:border-gray-300"
                         }
                       `}
                     >
@@ -170,18 +171,26 @@ const SettingsPage = () => {
                   </p>
                 </div>
                 <button
-                  onClick={() => handleNotificationChange('email')}
+                  onClick={() => handleNotificationChange("email")}
                   className={`
                     relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent 
                     transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2
-                    ${preferences.notifications.email ? 'bg-blue-600' : 'bg-gray-200'}
+                    ${
+                      preferences.notifications.email
+                        ? "bg-blue-600"
+                        : "bg-gray-200"
+                    }
                   `}
                 >
                   <span
                     className={`
                       pointer-events-none inline-block h-5 w-5 rounded-full bg-white shadow transform ring-0 
                       transition duration-200 ease-in-out
-                      ${preferences.notifications.email ? 'translate-x-5' : 'translate-x-0'}
+                      ${
+                        preferences.notifications.email
+                          ? "translate-x-5"
+                          : "translate-x-0"
+                      }
                     `}
                   />
                 </button>
@@ -197,18 +206,26 @@ const SettingsPage = () => {
                   </p>
                 </div>
                 <button
-                  onClick={() => handleNotificationChange('push')}
+                  onClick={() => handleNotificationChange("push")}
                   className={`
                     relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent 
                     transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2
-                    ${preferences.notifications.push ? 'bg-blue-600' : 'bg-gray-200'}
+                    ${
+                      preferences.notifications.push
+                        ? "bg-blue-600"
+                        : "bg-gray-200"
+                    }
                   `}
                 >
                   <span
                     className={`
                       pointer-events-none inline-block h-5 w-5 rounded-full bg-white shadow transform ring-0 
                       transition duration-200 ease-in-out
-                      ${preferences.notifications.push ? 'translate-x-5' : 'translate-x-0'}
+                      ${
+                        preferences.notifications.push
+                          ? "translate-x-5"
+                          : "translate-x-0"
+                      }
                     `}
                   />
                 </button>
@@ -224,18 +241,26 @@ const SettingsPage = () => {
                   </p>
                 </div>
                 <button
-                  onClick={() => handleNotificationChange('mentions')}
+                  onClick={() => handleNotificationChange("mentions")}
                   className={`
                     relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent 
                     transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2
-                    ${preferences.notifications.mentions ? 'bg-blue-600' : 'bg-gray-200'}
+                    ${
+                      preferences.notifications.mentions
+                        ? "bg-blue-600"
+                        : "bg-gray-200"
+                    }
                   `}
                 >
                   <span
                     className={`
                       pointer-events-none inline-block h-5 w-5 rounded-full bg-white shadow transform ring-0 
                       transition duration-200 ease-in-out
-                      ${preferences.notifications.mentions ? 'translate-x-5' : 'translate-x-0'}
+                      ${
+                        preferences.notifications.mentions
+                          ? "translate-x-5"
+                          : "translate-x-0"
+                      }
                     `}
                   />
                 </button>
@@ -267,18 +292,26 @@ const SettingsPage = () => {
                   </p>
                 </div>
                 <button
-                  onClick={() => handlePrivacyChange('showOnlineStatus')}
+                  onClick={() => handlePrivacyChange("showOnlineStatus")}
                   className={`
                     relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent 
                     transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2
-                    ${preferences.privacy.showOnlineStatus ? 'bg-blue-600' : 'bg-gray-200'}
+                    ${
+                      preferences.privacy.showOnlineStatus
+                        ? "bg-blue-600"
+                        : "bg-gray-200"
+                    }
                   `}
                 >
                   <span
                     className={`
                       pointer-events-none inline-block h-5 w-5 rounded-full bg-white shadow transform ring-0 
                       transition duration-200 ease-in-out
-                      ${preferences.privacy.showOnlineStatus ? 'translate-x-5' : 'translate-x-0'}
+                      ${
+                        preferences.privacy.showOnlineStatus
+                          ? "translate-x-5"
+                          : "translate-x-0"
+                      }
                     `}
                   />
                 </button>
@@ -294,18 +327,26 @@ const SettingsPage = () => {
                   </p>
                 </div>
                 <button
-                  onClick={() => handlePrivacyChange('showLastSeen')}
+                  onClick={() => handlePrivacyChange("showLastSeen")}
                   className={`
                     relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent 
                     transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2
-                    ${preferences.privacy.showLastSeen ? 'bg-blue-600' : 'bg-gray-200'}
+                    ${
+                      preferences.privacy.showLastSeen
+                        ? "bg-blue-600"
+                        : "bg-gray-200"
+                    }
                   `}
                 >
                   <span
                     className={`
                       pointer-events-none inline-block h-5 w-5 rounded-full bg-white shadow transform ring-0 
                       transition duration-200 ease-in-out
-                      ${preferences.privacy.showLastSeen ? 'translate-x-5' : 'translate-x-0'}
+                      ${
+                        preferences.privacy.showLastSeen
+                          ? "translate-x-5"
+                          : "translate-x-0"
+                      }
                     `}
                   />
                 </button>
@@ -324,20 +365,24 @@ const SettingsPage = () => {
           </div>
           <div className="px-6 py-4">
             <div className="space-y-3">
-              <button 
-                onClick={() => toast.info('Export feature coming soon!')}
+              <button
+                onClick={() => toast.info("Export feature coming soon!")}
                 className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 rounded-lg transition-colors duration-200"
               >
                 Export my data
               </button>
-              <button 
-                onClick={() => toast.info('Download feature coming soon!')}
+              <button
+                onClick={() => toast.info("Download feature coming soon!")}
                 className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 rounded-lg transition-colors duration-200"
               >
                 Download conversation history
               </button>
-              <button 
-                onClick={() => toast.error('Account deletion must be done through your Clerk account')}
+              <button
+                onClick={() =>
+                  toast.error(
+                    "Account deletion must be done through your Clerk account"
+                  )
+                }
                 className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 rounded-lg transition-colors duration-200"
               >
                 Delete account
@@ -348,7 +393,7 @@ const SettingsPage = () => {
 
         {/* Save Button */}
         <div className="flex justify-end">
-          <button 
+          <button
             onClick={handleSave}
             disabled={saving}
             className="btn-primary"
@@ -359,7 +404,7 @@ const SettingsPage = () => {
                 Saving...
               </div>
             ) : (
-              'Save Settings'
+              "Save Settings"
             )}
           </button>
         </div>

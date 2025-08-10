@@ -1,8 +1,8 @@
-const express = require('express');
-const { protect, getUserFromClerk } = require('../middleware/auth');
-const Chat = require('../models/Chat');
-const User = require('../models/User');
-const Message = require('../models/Message');
+const express = require("express");
+const { protect, getUserFromClerk } = require("../middleware/auth");
+const Chat = require("../models/Chat");
+const User = require("../models/User");
+const Message = require("../models/Message");
 const router = express.Router();
 
 /**
@@ -10,7 +10,7 @@ const router = express.Router();
  * @desc    Get all chats for the current user
  * @access  Private
  */
-router.get('/', protect, getUserFromClerk, async (req, res) => {
+router.get("/", protect, getUserFromClerk, async (req, res) => {
   try {
     const { userId } = req.auth;
 
@@ -19,7 +19,7 @@ router.get('/', protect, getUserFromClerk, async (req, res) => {
     if (!currentUser) {
       return res.status(404).json({
         success: false,
-        message: 'User not found'
+        message: "User not found",
       });
     }
 
@@ -27,20 +27,21 @@ router.get('/', protect, getUserFromClerk, async (req, res) => {
     const chats = await Chat.findUserChats(currentUser._id);
 
     // Format chats for response
-    const formattedChats = chats.map(chat => {
+    const formattedChats = chats.map((chat) => {
       const chatObj = chat.toObject();
-      
+
       // For direct chats, set name to other participant's name
-      if (chat.type === 'direct') {
+      if (chat.type === "direct") {
         const otherParticipant = chat.participants.find(
-          p => p.user._id.toString() !== currentUser._id.toString()
+          (p) => p.user._id.toString() !== currentUser._id.toString()
         );
         if (otherParticipant) {
-          chatObj.name = otherParticipant.user.fullName || otherParticipant.user.username;
+          chatObj.name =
+            otherParticipant.user.fullName || otherParticipant.user.username;
           chatObj.avatar = otherParticipant.user.avatar;
         }
       }
-      
+
       return chatObj;
     });
 
@@ -48,15 +49,14 @@ router.get('/', protect, getUserFromClerk, async (req, res) => {
       success: true,
       data: {
         chats: formattedChats,
-        count: formattedChats.length
-      }
+        count: formattedChats.length,
+      },
     });
-
   } catch (error) {
-    console.error('Error getting chats:', error);
+    console.error("Error getting chats:", error);
     res.status(500).json({
       success: false,
-      message: 'Error retrieving chats'
+      message: "Error retrieving chats",
     });
   }
 });
@@ -66,7 +66,7 @@ router.get('/', protect, getUserFromClerk, async (req, res) => {
  * @desc    Create a new chat
  * @access  Private
  */
-router.post('/', protect, getUserFromClerk, async (req, res) => {
+router.post("/", protect, getUserFromClerk, async (req, res) => {
   try {
     const { userId } = req.auth;
     const { type, name, description, participantIds } = req.body;
@@ -76,33 +76,36 @@ router.post('/', protect, getUserFromClerk, async (req, res) => {
     if (!currentUser) {
       return res.status(404).json({
         success: false,
-        message: 'User not found'
+        message: "User not found",
       });
     }
 
     // Validate chat type
-    if (!['direct', 'group'].includes(type)) {
+    if (!["direct", "group"].includes(type)) {
       return res.status(400).json({
         success: false,
-        message: 'Invalid chat type'
+        message: "Invalid chat type",
       });
     }
 
     // For direct chats, check if chat already exists
-    if (type === 'direct') {
+    if (type === "direct") {
       if (!participantIds || participantIds.length !== 1) {
         return res.status(400).json({
           success: false,
-          message: 'Direct chat requires exactly one other participant'
+          message: "Direct chat requires exactly one other participant",
         });
       }
 
-      const existingChat = await Chat.findDirectChat(currentUser._id, participantIds[0]);
+      const existingChat = await Chat.findDirectChat(
+        currentUser._id,
+        participantIds[0]
+      );
       if (existingChat) {
         return res.status(200).json({
           success: true,
-          message: 'Chat already exists',
-          data: { chat: existingChat }
+          message: "Chat already exists",
+          data: { chat: existingChat },
         });
       }
     }
@@ -112,7 +115,7 @@ router.post('/', protect, getUserFromClerk, async (req, res) => {
     if (participants.length !== participantIds.length) {
       return res.status(400).json({
         success: false,
-        message: 'One or more participants not found'
+        message: "One or more participants not found",
       });
     }
 
@@ -120,37 +123,39 @@ router.post('/', protect, getUserFromClerk, async (req, res) => {
     const chatParticipants = [
       {
         user: currentUser._id,
-        role: 'admin'
+        role: "admin",
       },
-      ...participantIds.map(id => ({
+      ...participantIds.map((id) => ({
         user: id,
-        role: 'member'
-      }))
+        role: "member",
+      })),
     ];
 
     // Create the chat
     const chat = await Chat.create({
       type,
-      name: type === 'group' ? name : undefined,
-      description: description || '',
+      name: type === "group" ? name : undefined,
+      description: description || "",
       participants: chatParticipants,
-      creator: currentUser._id
+      creator: currentUser._id,
     });
 
     // Populate the chat
-    await chat.populate('participants.user', 'username firstName lastName avatar isOnline');
+    await chat.populate(
+      "participants.user",
+      "username firstName lastName avatar isOnline"
+    );
 
     res.status(201).json({
       success: true,
-      message: 'Chat created successfully',
-      data: { chat }
+      message: "Chat created successfully",
+      data: { chat },
     });
-
   } catch (error) {
-    console.error('Error creating chat:', error);
+    console.error("Error creating chat:", error);
     res.status(500).json({
       success: false,
-      message: 'Error creating chat'
+      message: "Error creating chat",
     });
   }
 });
@@ -160,7 +165,7 @@ router.post('/', protect, getUserFromClerk, async (req, res) => {
  * @desc    Get a specific chat
  * @access  Private
  */
-router.get('/:chatId', protect, getUserFromClerk, async (req, res) => {
+router.get("/:chatId", protect, getUserFromClerk, async (req, res) => {
   try {
     const { chatId } = req.params;
     const { userId } = req.auth;
@@ -170,44 +175,46 @@ router.get('/:chatId', protect, getUserFromClerk, async (req, res) => {
     if (!currentUser) {
       return res.status(404).json({
         success: false,
-        message: 'User not found'
+        message: "User not found",
       });
     }
 
     // Get the chat
     const chat = await Chat.findById(chatId)
-      .populate('participants.user', 'username firstName lastName avatar isOnline')
-      .populate('lastMessage');
+      .populate(
+        "participants.user",
+        "username firstName lastName avatar isOnline"
+      )
+      .populate("lastMessage");
 
     if (!chat) {
       return res.status(404).json({
         success: false,
-        message: 'Chat not found'
+        message: "Chat not found",
       });
     }
 
     // Check if user is a participant
     const isParticipant = chat.participants.some(
-      p => p.user._id.toString() === currentUser._id.toString()
+      (p) => p.user._id.toString() === currentUser._id.toString()
     );
 
     if (!isParticipant) {
       return res.status(403).json({
         success: false,
-        message: 'Access denied'
+        message: "Access denied",
       });
     }
 
     res.status(200).json({
       success: true,
-      data: { chat }
+      data: { chat },
     });
-
   } catch (error) {
-    console.error('Error getting chat:', error);
+    console.error("Error getting chat:", error);
     res.status(500).json({
       success: false,
-      message: 'Error retrieving chat'
+      message: "Error retrieving chat",
     });
   }
 });
@@ -217,7 +224,7 @@ router.get('/:chatId', protect, getUserFromClerk, async (req, res) => {
  * @desc    Update chat details
  * @access  Private
  */
-router.put('/:chatId', protect, getUserFromClerk, async (req, res) => {
+router.put("/:chatId", protect, getUserFromClerk, async (req, res) => {
   try {
     const { chatId } = req.params;
     const { userId } = req.auth;
@@ -228,7 +235,7 @@ router.put('/:chatId', protect, getUserFromClerk, async (req, res) => {
     if (!currentUser) {
       return res.status(404).json({
         success: false,
-        message: 'User not found'
+        message: "User not found",
       });
     }
 
@@ -237,19 +244,19 @@ router.put('/:chatId', protect, getUserFromClerk, async (req, res) => {
     if (!chat) {
       return res.status(404).json({
         success: false,
-        message: 'Chat not found'
+        message: "Chat not found",
       });
     }
 
     // Check if user is admin of the chat
     const userParticipant = chat.participants.find(
-      p => p.user.toString() === currentUser._id.toString()
+      (p) => p.user.toString() === currentUser._id.toString()
     );
 
-    if (!userParticipant || userParticipant.role !== 'admin') {
+    if (!userParticipant || userParticipant.role !== "admin") {
       return res.status(403).json({
         success: false,
-        message: 'Only chat admins can update chat details'
+        message: "Only chat admins can update chat details",
       });
     }
 
@@ -262,15 +269,14 @@ router.put('/:chatId', protect, getUserFromClerk, async (req, res) => {
 
     res.status(200).json({
       success: true,
-      message: 'Chat updated successfully',
-      data: { chat }
+      message: "Chat updated successfully",
+      data: { chat },
     });
-
   } catch (error) {
-    console.error('Error updating chat:', error);
+    console.error("Error updating chat:", error);
     res.status(500).json({
       success: false,
-      message: 'Error updating chat'
+      message: "Error updating chat",
     });
   }
 });
@@ -280,140 +286,154 @@ router.put('/:chatId', protect, getUserFromClerk, async (req, res) => {
  * @desc    Add participants to a chat
  * @access  Private
  */
-router.post('/:chatId/participants', protect, getUserFromClerk, async (req, res) => {
-  try {
-    const { chatId } = req.params;
-    const { userId } = req.auth;
-    const { participantIds } = req.body;
+router.post(
+  "/:chatId/participants",
+  protect,
+  getUserFromClerk,
+  async (req, res) => {
+    try {
+      const { chatId } = req.params;
+      const { userId } = req.auth;
+      const { participantIds } = req.body;
 
-    // Get current user
-    const currentUser = await User.findOne({ clerkId: userId });
-    if (!currentUser) {
-      return res.status(404).json({
+      // Get current user
+      const currentUser = await User.findOne({ clerkId: userId });
+      if (!currentUser) {
+        return res.status(404).json({
+          success: false,
+          message: "User not found",
+        });
+      }
+
+      // Get the chat
+      const chat = await Chat.findById(chatId);
+      if (!chat) {
+        return res.status(404).json({
+          success: false,
+          message: "Chat not found",
+        });
+      }
+
+      // Only group chats can have participants added
+      if (chat.type !== "group") {
+        return res.status(400).json({
+          success: false,
+          message: "Cannot add participants to direct chats",
+        });
+      }
+
+      // Check if user has permission to add participants
+      const userParticipant = chat.participants.find(
+        (p) => p.user.toString() === currentUser._id.toString()
+      );
+
+      if (
+        !userParticipant ||
+        (!chat.settings.allowInvites && userParticipant.role !== "admin")
+      ) {
+        return res.status(403).json({
+          success: false,
+          message: "Insufficient permissions to add participants",
+        });
+      }
+
+      // Validate new participants
+      const newParticipants = await User.find({ _id: { $in: participantIds } });
+      if (newParticipants.length !== participantIds.length) {
+        return res.status(400).json({
+          success: false,
+          message: "One or more participants not found",
+        });
+      }
+
+      // Add participants
+      for (const participantId of participantIds) {
+        await chat.addParticipant(participantId);
+      }
+
+      // Populate and return updated chat
+      await chat.populate(
+        "participants.user",
+        "username firstName lastName avatar isOnline"
+      );
+
+      res.status(200).json({
+        success: true,
+        message: "Participants added successfully",
+        data: { chat },
+      });
+    } catch (error) {
+      console.error("Error adding participants:", error);
+      res.status(500).json({
         success: false,
-        message: 'User not found'
+        message: "Error adding participants",
       });
     }
-
-    // Get the chat
-    const chat = await Chat.findById(chatId);
-    if (!chat) {
-      return res.status(404).json({
-        success: false,
-        message: 'Chat not found'
-      });
-    }
-
-    // Only group chats can have participants added
-    if (chat.type !== 'group') {
-      return res.status(400).json({
-        success: false,
-        message: 'Cannot add participants to direct chats'
-      });
-    }
-
-    // Check if user has permission to add participants
-    const userParticipant = chat.participants.find(
-      p => p.user.toString() === currentUser._id.toString()
-    );
-
-    if (!userParticipant || (!chat.settings.allowInvites && userParticipant.role !== 'admin')) {
-      return res.status(403).json({
-        success: false,
-        message: 'Insufficient permissions to add participants'
-      });
-    }
-
-    // Validate new participants
-    const newParticipants = await User.find({ _id: { $in: participantIds } });
-    if (newParticipants.length !== participantIds.length) {
-      return res.status(400).json({
-        success: false,
-        message: 'One or more participants not found'
-      });
-    }
-
-    // Add participants
-    for (const participantId of participantIds) {
-      await chat.addParticipant(participantId);
-    }
-
-    // Populate and return updated chat
-    await chat.populate('participants.user', 'username firstName lastName avatar isOnline');
-
-    res.status(200).json({
-      success: true,
-      message: 'Participants added successfully',
-      data: { chat }
-    });
-
-  } catch (error) {
-    console.error('Error adding participants:', error);
-    res.status(500).json({
-      success: false,
-      message: 'Error adding participants'
-    });
   }
-});
+);
 
 /**
  * @route   DELETE /api/chats/:chatId/participants/:participantId
  * @desc    Remove a participant from a chat
  * @access  Private
  */
-router.delete('/:chatId/participants/:participantId', protect, getUserFromClerk, async (req, res) => {
-  try {
-    const { chatId, participantId } = req.params;
-    const { userId } = req.auth;
+router.delete(
+  "/:chatId/participants/:participantId",
+  protect,
+  getUserFromClerk,
+  async (req, res) => {
+    try {
+      const { chatId, participantId } = req.params;
+      const { userId } = req.auth;
 
-    // Get current user
-    const currentUser = await User.findOne({ clerkId: userId });
-    if (!currentUser) {
-      return res.status(404).json({
+      // Get current user
+      const currentUser = await User.findOne({ clerkId: userId });
+      if (!currentUser) {
+        return res.status(404).json({
+          success: false,
+          message: "User not found",
+        });
+      }
+
+      // Get the chat
+      const chat = await Chat.findById(chatId);
+      if (!chat) {
+        return res.status(404).json({
+          success: false,
+          message: "Chat not found",
+        });
+      }
+
+      // Check permissions
+      const userParticipant = chat.participants.find(
+        (p) => p.user.toString() === currentUser._id.toString()
+      );
+
+      const isRemovingSelf = participantId === currentUser._id.toString();
+      const isAdmin = userParticipant && userParticipant.role === "admin";
+
+      if (!isRemovingSelf && !isAdmin) {
+        return res.status(403).json({
+          success: false,
+          message: "Insufficient permissions",
+        });
+      }
+
+      // Remove participant
+      await chat.removeParticipant(participantId);
+
+      res.status(200).json({
+        success: true,
+        message: "Participant removed successfully",
+      });
+    } catch (error) {
+      console.error("Error removing participant:", error);
+      res.status(500).json({
         success: false,
-        message: 'User not found'
+        message: "Error removing participant",
       });
     }
-
-    // Get the chat
-    const chat = await Chat.findById(chatId);
-    if (!chat) {
-      return res.status(404).json({
-        success: false,
-        message: 'Chat not found'
-      });
-    }
-
-    // Check permissions
-    const userParticipant = chat.participants.find(
-      p => p.user.toString() === currentUser._id.toString()
-    );
-
-    const isRemovingSelf = participantId === currentUser._id.toString();
-    const isAdmin = userParticipant && userParticipant.role === 'admin';
-
-    if (!isRemovingSelf && !isAdmin) {
-      return res.status(403).json({
-        success: false,
-        message: 'Insufficient permissions'
-      });
-    }
-
-    // Remove participant
-    await chat.removeParticipant(participantId);
-
-    res.status(200).json({
-      success: true,
-      message: 'Participant removed successfully'
-    });
-
-  } catch (error) {
-    console.error('Error removing participant:', error);
-    res.status(500).json({
-      success: false,
-      message: 'Error removing participant'
-    });
   }
-});
+);
 
 module.exports = router;

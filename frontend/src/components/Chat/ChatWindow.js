@@ -1,17 +1,17 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { useChat } from '../../contexts/ChatContext';
-import { useSocket } from '../../contexts/SocketContext';
-import { useAuth } from '../../contexts/AuthContext';
-import { 
+import React, { useState, useEffect, useRef } from "react";
+import { useChat } from "../../contexts/ChatContext";
+import { useSocket } from "../../contexts/SocketContext";
+import { useAuth } from "../../contexts/AuthContext";
+import {
   Bars3Icon,
   PaperAirplaneIcon,
   FaceSmileIcon,
   PaperClipIcon,
-  EllipsisVerticalIcon
-} from '@heroicons/react/24/outline';
-import MessageList from './MessageList';
-import TypingIndicator from './TypingIndicator';
-import LoadingSpinner from '../UI/LoadingSpinner';
+  EllipsisVerticalIcon,
+} from "@heroicons/react/24/outline";
+import MessageList from "./MessageList";
+import TypingIndicator from "./TypingIndicator";
+import LoadingSpinner from "../UI/LoadingSpinner";
 
 /**
  * Chat Window Component
@@ -19,19 +19,10 @@ import LoadingSpinner from '../UI/LoadingSpinner';
  */
 const ChatWindow = ({ onToggleSidebar }) => {
   const { user } = useAuth();
-  const { 
-    currentChat, 
-    messages, 
-    sendMessage, 
-    messageLoading 
-  } = useChat();
-  const { 
-    sendTyping, 
-    getTypingUsers, 
-    markMessagesRead 
-  } = useSocket();
+  const { currentChat, messages, sendMessage, messageLoading } = useChat();
+  const { sendTyping, getTypingUsers, markMessagesRead } = useSocket();
 
-  const [messageText, setMessageText] = useState('');
+  const [messageText, setMessageText] = useState("");
   const [isTyping, setIsTyping] = useState(false);
   const [showChatMenu, setShowChatMenu] = useState(false);
   const typingTimeoutRef = useRef(null);
@@ -39,7 +30,7 @@ const ChatWindow = ({ onToggleSidebar }) => {
 
   // Auto-scroll to bottom when new messages arrive
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
   // Mark messages as read when chat changes
@@ -84,30 +75,30 @@ const ChatWindow = ({ onToggleSidebar }) => {
 
   const handleSendMessage = async (e) => {
     e.preventDefault();
-    
+
     if (!messageText.trim() || !currentChat) return;
 
     const messageContent = {
       text: messageText.trim(),
-      type: 'text'
+      type: "text",
     };
 
     try {
       await sendMessage(currentChat._id, messageContent);
-      setMessageText('');
-      
+      setMessageText("");
+
       // Stop typing indicator
       if (isTyping) {
         setIsTyping(false);
         sendTyping(currentChat._id, false);
       }
     } catch (error) {
-      console.error('Error sending message:', error);
+      console.error("Error sending message:", error);
     }
   };
 
   const handleKeyPress = (e) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
+    if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
       handleSendMessage(e);
     }
@@ -118,14 +109,18 @@ const ChatWindow = ({ onToggleSidebar }) => {
   }
 
   // Get chat display info
-  const isDirectChat = currentChat.type === 'direct';
-  const otherParticipant = isDirectChat && currentChat.participants?.length > 0
-    ? currentChat.participants.find(p => p.user._id !== user?.id)?.user
-    : null;
-  
-  const chatName = currentChat.name || 
-    (otherParticipant ? otherParticipant.fullName || otherParticipant.username : 'Unknown User');
-  
+  const isDirectChat = currentChat.type === "direct";
+  const otherParticipant =
+    isDirectChat && currentChat.participants?.length > 0
+      ? currentChat.participants.find((p) => p.user._id !== user?.id)?.user
+      : null;
+
+  const chatName =
+    currentChat.name ||
+    (otherParticipant
+      ? otherParticipant.fullName || otherParticipant.username
+      : "Unknown User");
+
   const chatAvatar = currentChat.avatar || otherParticipant?.avatar;
 
   // Get typing users
@@ -148,8 +143,8 @@ const ChatWindow = ({ onToggleSidebar }) => {
           <div className="relative">
             <div className="w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center overflow-hidden">
               {chatAvatar ? (
-                <img 
-                  src={chatAvatar} 
+                <img
+                  src={chatAvatar}
                   alt={chatName}
                   className="w-full h-full object-cover"
                 />
@@ -169,10 +164,11 @@ const ChatWindow = ({ onToggleSidebar }) => {
               {chatName}
             </h2>
             <p className="text-sm text-gray-500">
-              {isDirectChat 
-                ? (otherParticipant?.isOnline ? 'Online' : 'Offline')
-                : `${currentChat.participants?.length || 0} members`
-              }
+              {isDirectChat
+                ? otherParticipant?.isOnline
+                  ? "Online"
+                  : "Offline"
+                : `${currentChat.participants?.length || 0} members`}
             </p>
           </div>
         </div>
@@ -213,12 +209,12 @@ const ChatWindow = ({ onToggleSidebar }) => {
         ) : (
           <>
             <MessageList messages={messages} />
-            
+
             {/* Typing indicator */}
             {typingUsers.length > 0 && (
               <TypingIndicator userIds={typingUsers} />
             )}
-            
+
             {/* Scroll anchor */}
             <div ref={messagesEndRef} />
           </>
@@ -246,7 +242,7 @@ const ChatWindow = ({ onToggleSidebar }) => {
               placeholder="Type a message..."
               rows={1}
               className="w-full px-4 py-2 border border-gray-300 rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              style={{ minHeight: '40px', maxHeight: '120px' }}
+              style={{ minHeight: "40px", maxHeight: "120px" }}
             />
           </div>
 
@@ -265,9 +261,10 @@ const ChatWindow = ({ onToggleSidebar }) => {
             disabled={!messageText.trim()}
             className={`
               flex-shrink-0 p-2 rounded-lg transition-colors duration-200
-              ${messageText.trim()
-                ? 'text-blue-600 hover:text-blue-700 hover:bg-blue-50'
-                : 'text-gray-300 cursor-not-allowed'
+              ${
+                messageText.trim()
+                  ? "text-blue-600 hover:text-blue-700 hover:bg-blue-50"
+                  : "text-gray-300 cursor-not-allowed"
               }
             `}
             title="Send message"
@@ -279,8 +276,8 @@ const ChatWindow = ({ onToggleSidebar }) => {
 
       {/* Click outside to close menu */}
       {showChatMenu && (
-        <div 
-          className="fixed inset-0 z-0" 
+        <div
+          className="fixed inset-0 z-0"
           onClick={() => setShowChatMenu(false)}
         />
       )}

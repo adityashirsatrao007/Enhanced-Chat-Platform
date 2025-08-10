@@ -12,7 +12,12 @@
     "install-deps": "npm install && cd backend && npm install && cd ../frontend && npm install",
     "postinstall": "cd backend && npm install"
   },
-  "keywords": ["chat", "mern", "clerk", "authentication"],
+  "keywords": [
+    "chat",
+    "mern",
+    "clerk",
+    "authentication"
+  ],
   "author": "Enhanced Chat Platform",
   "license": "MIT"
 }

@@ -1,10 +1,10 @@
-import React from 'react';
-import { 
+import React from "react";
+import {
   PlusIcon,
   ChatBubbleLeftRightIcon,
   UserGroupIcon,
-  Bars3Icon
-} from '@heroicons/react/24/outline';
+  Bars3Icon,
+} from "@heroicons/react/24/outline";
 
 /**
  * Chat Welcome Component
@@ -31,7 +31,7 @@ const ChatWelcome = ({ onNewChat, onToggleSidebar }) => {
             <div className="w-24 h-24 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
               <ChatBubbleLeftRightIcon className="w-12 h-12 text-blue-600" />
             </div>
-            
+
             {/* Decorative elements */}
             <div className="relative">
               <div className="absolute -top-4 -left-8 w-3 h-3 bg-blue-200 rounded-full opacity-60"></div>
@@ -44,10 +44,10 @@ const ChatWelcome = ({ onNewChat, onToggleSidebar }) => {
           <h1 className="text-3xl font-bold text-gray-900 mb-4">
             Welcome to Enhanced Chat
           </h1>
-          
+
           <p className="text-lg text-gray-600 mb-8">
-            Connect with friends, colleagues, and communities. 
-            Start a conversation or join an existing one.
+            Connect with friends, colleagues, and communities. Start a
+            conversation or join an existing one.
           </p>
 
           {/* Action buttons */}
@@ -59,7 +59,7 @@ const ChatWelcome = ({ onNewChat, onToggleSidebar }) => {
               <PlusIcon className="w-5 h-5 mr-2" />
               Start New Conversation
             </button>
-            
+
             <div className="relative">
               <div className="absolute inset-0 flex items-center">
                 <div className="w-full border-t border-gray-300" />
@@ -68,8 +68,8 @@ const ChatWelcome = ({ onNewChat, onToggleSidebar }) => {
                 <span className="px-2 bg-gray-50 text-gray-500">or</span>
               </div>
             </div>
-            
-            <button 
+
+            <button
               onClick={() => {
                 // For now, just trigger new chat
                 // In the future, this could open a "join group" modal

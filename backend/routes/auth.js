@@ -1,6 +1,6 @@
-const express = require('express');
-const { protect, getUserFromClerk } = require('../middleware/auth');
-const User = require('../models/User');
+const express = require("express");
+const { protect, getUserFromClerk } = require("../middleware/auth");
+const User = require("../models/User");
 const router = express.Router();
 
 /**
@@ -8,17 +8,10 @@ const router = express.Router();
  * @desc    Sync user data from Clerk to MongoDB
  * @access  Private
  */
-router.post('/sync', protect, getUserFromClerk, async (req, res) => {
+router.post("/sync", protect, getUserFromClerk, async (req, res) => {
   try {
     const { userId } = req.auth;
-    const { 
-      email, 
-      username, 
-      firstName, 
-      lastName, 
-      avatar,
-      bio 
-    } = req.body;
+    const { email, username, firstName, lastName, avatar, bio } = req.body;
 
     // Check if user already exists
     let user = await User.findOne({ clerkId: userId });
@@ -31,44 +24,43 @@ router.post('/sync', protect, getUserFromClerk, async (req, res) => {
       user.lastName = lastName || user.lastName;
       user.avatar = avatar || user.avatar;
       user.bio = bio || user.bio;
-      
+
       await user.save();
     } else {
       // Create new user
       user = await User.create({
         clerkId: userId,
         email,
-        username: username || email.split('@')[0],
-        firstName: firstName || 'User',
-        lastName: lastName || '',
-        avatar: avatar || '',
-        bio: bio || ''
+        username: username || email.split("@")[0],
+        firstName: firstName || "User",
+        lastName: lastName || "",
+        avatar: avatar || "",
+        bio: bio || "",
       });
     }
 
     res.status(200).json({
       success: true,
-      message: 'User synced successfully',
+      message: "User synced successfully",
       data: {
-        user: user.getPublicProfile()
-      }
+        user: user.getPublicProfile(),
+      },
     });
-
   } catch (error) {
-    console.error('Error syncing user:', error);
-    
+    console.error("Error syncing user:", error);
+
     // Handle duplicate key errors
     if (error.code === 11000) {
       const field = Object.keys(error.keyPattern)[0];
       return res.status(400).json({
         success: false,
-        message: `${field} already exists`
+        message: `${field} already exists`,
       });
     }
 
     res.status(500).json({
       success: false,
-      message: 'Error syncing user data'
+      message: "Error syncing user data",
     });
   }
 });
@@ -78,7 +70,7 @@ router.post('/sync', protect, getUserFromClerk, async (req, res) => {
  * @desc    Get current user profile
  * @access  Private
  */
-router.get('/profile', protect, getUserFromClerk, async (req, res) => {
+router.get("/profile", protect, getUserFromClerk, async (req, res) => {
   try {
     const { userId } = req.auth;
 
@@ -87,7 +79,7 @@ router.get('/profile', protect, getUserFromClerk, async (req, res) => {
     if (!user) {
       return res.status(404).json({
         success: false,
-        message: 'User profile not found'
+        message: "User profile not found",
       });
     }
 
@@ -96,16 +88,15 @@ router.get('/profile', protect, getUserFromClerk, async (req, res) => {
       data: {
         user: {
           ...user.toObject(),
-          clerkId: undefined // Don't expose Clerk ID
-        }
-      }
+          clerkId: undefined, // Don't expose Clerk ID
+        },
+      },
     });
-
   } catch (error) {
-    console.error('Error getting user profile:', error);
+    console.error("Error getting user profile:", error);
     res.status(500).json({
       success: false,
-      message: 'Error retrieving profile'
+      message: "Error retrieving profile",
     });
   }
 });
@@ -115,7 +106,7 @@ router.get('/profile', protect, getUserFromClerk, async (req, res) => {
  * @desc    Update current user profile
  * @access  Private
  */
-router.put('/profile', protect, getUserFromClerk, async (req, res) => {
+router.put("/profile", protect, getUserFromClerk, async (req, res) => {
   try {
     const { userId } = req.auth;
     const updates = req.body;
@@ -136,32 +127,31 @@ router.put('/profile', protect, getUserFromClerk, async (req, res) => {
     if (!user) {
       return res.status(404).json({
         success: false,
-        message: 'User not found'
+        message: "User not found",
       });
     }
 
     res.status(200).json({
       success: true,
-      message: 'Profile updated successfully',
+      message: "Profile updated successfully",
       data: {
-        user: user.getPublicProfile()
-      }
+        user: user.getPublicProfile(),
+      },
     });
-
   } catch (error) {
-    console.error('Error updating profile:', error);
-    
+    console.error("Error updating profile:", error);
+
     if (error.code === 11000) {
       const field = Object.keys(error.keyPattern)[0];
       return res.status(400).json({
         success: false,
-        message: `${field} already exists`
+        message: `${field} already exists`,
       });
     }
 
     res.status(500).json({
       success: false,
-      message: 'Error updating profile'
+      message: "Error updating profile",
     });
   }
 });
@@ -171,16 +161,16 @@ router.put('/profile', protect, getUserFromClerk, async (req, res) => {
  * @desc    Update user online status
  * @access  Private
  */
-router.post('/status', protect, getUserFromClerk, async (req, res) => {
+router.post("/status", protect, getUserFromClerk, async (req, res) => {
   try {
     const { userId } = req.auth;
     const { isOnline } = req.body;
 
     const user = await User.findOneAndUpdate(
       { clerkId: userId },
-      { 
+      {
         isOnline: isOnline,
-        lastSeen: new Date()
+        lastSeen: new Date(),
       },
       { new: true }
     );
@@ -188,24 +178,23 @@ router.post('/status', protect, getUserFromClerk, async (req, res) => {
     if (!user) {
       return res.status(404).json({
         success: false,
-        message: 'User not found'
+        message: "User not found",
       });
     }
 
     res.status(200).json({
       success: true,
-      message: 'Status updated successfully',
+      message: "Status updated successfully",
       data: {
         isOnline: user.isOnline,
-        lastSeen: user.lastSeen
-      }
+        lastSeen: user.lastSeen,
+      },
     });
-
   } catch (error) {
-    console.error('Error updating status:', error);
+    console.error("Error updating status:", error);
     res.status(500).json({
       success: false,
-      message: 'Error updating status'
+      message: "Error updating status",
     });
   }
 });

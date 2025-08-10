@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
-import { useAuth } from '../contexts/AuthContext';
-import { UserIcon, CameraIcon } from '@heroicons/react/24/outline';
-import LoadingSpinner from '../components/UI/LoadingSpinner';
-import toast from 'react-hot-toast';
+import React, { useState } from "react";
+import { useAuth } from "../contexts/AuthContext";
+import { UserIcon, CameraIcon } from "@heroicons/react/24/outline";
+import LoadingSpinner from "../components/UI/LoadingSpinner";
+import toast from "react-hot-toast";
 
 /**
  * Profile Page Component
@@ -12,11 +12,11 @@ const ProfilePage = () => {
   const { user, updateProfile, loading } = useAuth();
   const [editing, setEditing] = useState(false);
   const [formData, setFormData] = useState({
-    firstName: '',
-    lastName: '',
-    username: '',
-    bio: '',
-    avatar: ''
+    firstName: "",
+    lastName: "",
+    username: "",
+    bio: "",
+    avatar: "",
   });
   const [saving, setSaving] = useState(false);
 
@@ -24,28 +24,28 @@ const ProfilePage = () => {
   React.useEffect(() => {
     if (user) {
       setFormData({
-        firstName: user.firstName || '',
-        lastName: user.lastName || '',
-        username: user.username || '',
-        bio: user.bio || '',
-        avatar: user.avatar || ''
+        firstName: user.firstName || "",
+        lastName: user.lastName || "",
+        username: user.username || "",
+        bio: user.bio || "",
+        avatar: user.avatar || "",
       });
     }
   }, [user]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      [name]: value
+      [name]: value,
     }));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     if (!formData.firstName.trim() || !formData.username.trim()) {
-      toast.error('First name and username are required');
+      toast.error("First name and username are required");
       return;
     }
 
@@ -64,11 +64,11 @@ const ProfilePage = () => {
     // Reset form data to original values
     if (user) {
       setFormData({
-        firstName: user.firstName || '',
-        lastName: user.lastName || '',
-        username: user.username || '',
-        bio: user.bio || '',
-        avatar: user.avatar || ''
+        firstName: user.firstName || "",
+        lastName: user.lastName || "",
+        username: user.username || "",
+        bio: user.bio || "",
+        avatar: user.avatar || "",
       });
     }
     setEditing(false);
@@ -108,8 +108,8 @@ const ProfilePage = () => {
             <div className="relative">
               <div className="w-24 h-24 bg-gray-200 rounded-full flex items-center justify-center overflow-hidden">
                 {user.avatar ? (
-                  <img 
-                    src={user.avatar} 
+                  <img
+                    src={user.avatar}
                     alt={user.username}
                     className="w-full h-full object-cover"
                   />
@@ -118,10 +118,10 @@ const ProfilePage = () => {
                 )}
               </div>
               {editing && (
-                <button 
+                <button
                   type="button"
                   className="absolute bottom-0 right-0 bg-blue-500 hover:bg-blue-600 text-white rounded-full p-2 shadow-lg transition-colors duration-200"
-                  onClick={() => toast.info('Avatar upload coming soon!')}
+                  onClick={() => toast.info("Avatar upload coming soon!")}
                 >
                   <CameraIcon className="w-4 h-4" />
                 </button>
@@ -135,24 +135,23 @@ const ProfilePage = () => {
               </h2>
               <p className="text-gray-600">@{user.username}</p>
               <p className="text-sm text-gray-500 mt-1">{user.email}</p>
-              
+
               {/* Status */}
               <div className="flex items-center mt-2">
-                <div className={`w-3 h-3 rounded-full mr-2 ${
-                  user.isOnline ? 'bg-green-400' : 'bg-gray-400'
-                }`}></div>
+                <div
+                  className={`w-3 h-3 rounded-full mr-2 ${
+                    user.isOnline ? "bg-green-400" : "bg-gray-400"
+                  }`}
+                ></div>
                 <span className="text-sm text-gray-600">
-                  {user.isOnline ? 'Online' : 'Offline'}
+                  {user.isOnline ? "Online" : "Offline"}
                 </span>
               </div>
             </div>
 
             {/* Edit Button */}
             {!editing && (
-              <button 
-                onClick={() => setEditing(true)}
-                className="btn-primary"
-              >
+              <button onClick={() => setEditing(true)} className="btn-primary">
                 Edit Profile
               </button>
             )}
@@ -165,7 +164,10 @@ const ProfilePage = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {/* First Name */}
               <div>
-                <label htmlFor="firstName" className="block text-sm font-medium text-gray-700 mb-2">
+                <label
+                  htmlFor="firstName"
+                  className="block text-sm font-medium text-gray-700 mb-2"
+                >
                   First Name
                 </label>
                 {editing ? (
@@ -179,13 +181,18 @@ const ProfilePage = () => {
                     required
                   />
                 ) : (
-                  <p className="py-2 text-gray-900">{user.firstName || 'Not set'}</p>
+                  <p className="py-2 text-gray-900">
+                    {user.firstName || "Not set"}
+                  </p>
                 )}
               </div>
 
               {/* Last Name */}
               <div>
-                <label htmlFor="lastName" className="block text-sm font-medium text-gray-700 mb-2">
+                <label
+                  htmlFor="lastName"
+                  className="block text-sm font-medium text-gray-700 mb-2"
+                >
                   Last Name
                 </label>
                 {editing ? (
@@ -198,13 +205,18 @@ const ProfilePage = () => {
                     className="input-field"
                   />
                 ) : (
-                  <p className="py-2 text-gray-900">{user.lastName || 'Not set'}</p>
+                  <p className="py-2 text-gray-900">
+                    {user.lastName || "Not set"}
+                  </p>
                 )}
               </div>
 
               {/* Username */}
               <div>
-                <label htmlFor="username" className="block text-sm font-medium text-gray-700 mb-2">
+                <label
+                  htmlFor="username"
+                  className="block text-sm font-medium text-gray-700 mb-2"
+                >
                   Username
                 </label>
                 {editing ? (
@@ -224,7 +236,10 @@ const ProfilePage = () => {
 
               {/* Email (read-only) */}
               <div>
-                <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
+                <label
+                  htmlFor="email"
+                  className="block text-sm font-medium text-gray-700 mb-2"
+                >
                   Email Address
                 </label>
                 <p className="py-2 text-gray-500">{user.email}</p>
@@ -236,7 +251,10 @@ const ProfilePage = () => {
 
             {/* Bio */}
             <div className="mt-6">
-              <label htmlFor="bio" className="block text-sm font-medium text-gray-700 mb-2">
+              <label
+                htmlFor="bio"
+                className="block text-sm font-medium text-gray-700 mb-2"
+              >
                 Bio
               </label>
               {editing ? (
@@ -252,7 +270,7 @@ const ProfilePage = () => {
                 />
               ) : (
                 <p className="py-2 text-gray-900 whitespace-pre-wrap">
-                  {user.bio || 'No bio added yet.'}
+                  {user.bio || "No bio added yet."}
                 </p>
               )}
               {editing && (
@@ -265,7 +283,7 @@ const ProfilePage = () => {
             {/* Action Buttons */}
             {editing && (
               <div className="flex justify-end space-x-4 mt-8 pt-6 border-t border-gray-200">
-                <button 
+                <button
                   type="button"
                   onClick={handleCancel}
                   className="btn-secondary"
@@ -273,18 +291,14 @@ const ProfilePage = () => {
                 >
                   Cancel
                 </button>
-                <button 
-                  type="submit"
-                  className="btn-primary"
-                  disabled={saving}
-                >
+                <button type="submit" className="btn-primary" disabled={saving}>
                   {saving ? (
                     <div className="flex items-center">
                       <LoadingSpinner size="sm" className="mr-2" />
                       Saving...
                     </div>
                   ) : (
-                    'Save Changes'
+                    "Save Changes"
                   )}
                 </button>
               </div>
@@ -296,7 +310,9 @@ const ProfilePage = () => {
       {/* Account Information */}
       <div className="mt-8 bg-white rounded-lg shadow-sm border border-gray-200">
         <div className="px-6 py-4 border-b border-gray-200">
-          <h3 className="text-lg font-medium text-gray-900">Account Information</h3>
+          <h3 className="text-lg font-medium text-gray-900">
+            Account Information
+          </h3>
         </div>
         <div className="px-6 py-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -305,10 +321,10 @@ const ProfilePage = () => {
                 Member Since
               </label>
               <p className="text-gray-900">
-                {new Date(user.createdAt).toLocaleDateString('en-US', {
-                  year: 'numeric',
-                  month: 'long',
-                  day: 'numeric'
+                {new Date(user.createdAt).toLocaleDateString("en-US", {
+                  year: "numeric",
+                  month: "long",
+                  day: "numeric",
                 })}
               </p>
             </div>
@@ -317,15 +333,15 @@ const ProfilePage = () => {
                 Last Active
               </label>
               <p className="text-gray-900">
-                {user.isOnline ? 'Currently online' : 
-                  new Date(user.lastSeen).toLocaleDateString('en-US', {
-                    year: 'numeric',
-                    month: 'short',
-                    day: 'numeric',
-                    hour: '2-digit',
-                    minute: '2-digit'
-                  })
-                }
+                {user.isOnline
+                  ? "Currently online"
+                  : new Date(user.lastSeen).toLocaleDateString("en-US", {
+                      year: "numeric",
+                      month: "short",
+                      day: "numeric",
+                      hour: "2-digit",
+                      minute: "2-digit",
+                    })}
               </p>
             </div>
           </div>

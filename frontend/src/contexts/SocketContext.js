@@ -1,7 +1,13 @@
-import React, { createContext, useContext, useEffect, useState, useRef } from 'react';
-import { io } from 'socket.io-client';
-import { useAuth } from './AuthContext';
-import toast from 'react-hot-toast';
+import React, {
+  createContext,
+  useContext,
+  useEffect,
+  useState,
+  useRef,
+} from "react";
+import { io } from "socket.io-client";
+import { useAuth } from "./AuthContext";
+import toast from "react-hot-toast";
 
 const SocketContext = createContext({});
 
@@ -24,11 +30,14 @@ export const SocketProvider = ({ children }) => {
   const initializeSocket = () => {
     if (!isAuthenticated || !user) return;
 
-    const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
-    const socketUrl = API_URL.replace('/api', '');
+    // Dynamic URL configuration for development/production
+    const isDevelopment = process.env.NODE_ENV === "development";
+    const socketUrl = isDevelopment
+      ? "http://localhost:5000" // Development server
+      : window.location.origin; // Production (same domain)
 
     const newSocket = io(socketUrl, {
-      transports: ['websocket'],
+      transports: ["websocket"],
       upgrade: true,
       autoConnect: true,
       reconnection: true,
@@ -37,13 +46,13 @@ export const SocketProvider = ({ children }) => {
     });
 
     // Connection event handlers
-    newSocket.on('connect', () => {
-      console.log('✅ Socket connected:', newSocket.id);
+    newSocket.on("connect", () => {
+      console.log("✅ Socket connected:", newSocket.id);
       setConnected(true);
-      
+
       // Authenticate with server
-      newSocket.emit('authenticate', {
-        userId: user.clerkId
+      newSocket.emit("authenticate", {
+        userId: user.clerkId,
       });
 
       // Clear any existing reconnection timeout
@@ -53,58 +62,64 @@ export const SocketProvider = ({ children }) => {
       }
     });
 
-    newSocket.on('authenticated', (data) => {
-      console.log('✅ Socket authenticated:', data.message);
-      toast.success('Connected to chat server');
+    newSocket.on("authenticated", (data) => {
+      console.log("✅ Socket authenticated:", data.message);
+      toast.success("Connected to chat server");
     });
 
-    newSocket.on('disconnect', (reason) => {
-      console.log('🔌 Socket disconnected:', reason);
+    newSocket.on("disconnect", (reason) => {
+      console.log("🔌 Socket disconnected:", reason);
       setConnected(false);
-      
-      if (reason === 'io server disconnect') {
+
+      if (reason === "io server disconnect") {
         // Server disconnected, attempt manual reconnection
         scheduleReconnection(newSocket);
       }
     });
 
-    newSocket.on('connect_error', (error) => {
-      console.error('❌ Socket connection error:', error);
+    newSocket.on("connect_error", (error) => {
+      console.error("❌ Socket connection error:", error);
       setConnected(false);
-      toast.error('Failed to connect to chat server');
+      toast.error("Failed to connect to chat server");
       scheduleReconnection(newSocket);
     });
 
     // Message event handlers
-    newSocket.on('new-message', (data) => {
+    newSocket.on("new-message", (data) => {
       // Handle new message - will be processed by ChatContext
-      window.dispatchEvent(new CustomEvent('new-message', { detail: data }));
+      window.dispatchEvent(new CustomEvent("new-message", { detail: data }));
     });
 
-    newSocket.on('message-updated', (data) => {
-      window.dispatchEvent(new CustomEvent('message-updated', { detail: data }));
+    newSocket.on("message-updated", (data) => {
+      window.dispatchEvent(
+        new CustomEvent("message-updated", { detail: data })
+      );
     });
 
-    newSocket.on('message-deleted', (data) => {
-      window.dispatchEvent(new CustomEvent('message-deleted', { detail: data }));
+    newSocket.on("message-deleted", (data) => {
+      window.dispatchEvent(
+        new CustomEvent("message-deleted", { detail: data })
+      );
     });
 
-    newSocket.on('reaction-added', (data) => {
-      window.dispatchEvent(new CustomEvent('reaction-added', { detail: data }));
+    newSocket.on("reaction-added", (data) => {
+      window.dispatchEvent(new CustomEvent("reaction-added", { detail: data }));
     });
 
-    newSocket.on('reaction-removed', (data) => {
-      window.dispatchEvent(new CustomEvent('reaction-removed', { detail: data }));
+    newSocket.on("reaction-removed", (data) => {
+      window.dispatchEvent(
+        new CustomEvent("reaction-removed", { detail: data })
+      );
     });
 
     // Typing indicators
-    newSocket.on('user-typing', (data) => {
-      setTypingUsers(prev => {
+    newSocket.on("user-typing", (data) => {
+      setTypingUsers((prev) => {
         const newTyping = new Map(prev);
         newTyping.set(`${data.chatId}-${data.userId}`, {
           userId: data.userId,
           chatId: data.chatId,
-          timestamp: Date.now()
+          timestamp: Date.now(),
         });
         return newTyping;
       });
@@ -114,27 +129,27 @@ export const SocketProvider = ({ children }) => {
       if (typingTimeoutRef.current.has(key)) {
         clearTimeout(typingTimeoutRef.current.get(key));
       }
-      
+
       const timeout = setTimeout(() => {
-        setTypingUsers(prev => {
+        setTypingUsers((prev) => {
           const newTyping = new Map(prev);
           newTyping.delete(key);
           return newTyping;
         });
         typingTimeoutRef.current.delete(key);
       }, 3000);
-      
+
       typingTimeoutRef.current.set(key, timeout);
     });
 
-    newSocket.on('user-stopped-typing', (data) => {
+    newSocket.on("user-stopped-typing", (data) => {
       const key = `${data.chatId}-${data.userId}`;
-      setTypingUsers(prev => {
+      setTypingUsers((prev) => {
         const newTyping = new Map(prev);
         newTyping.delete(key);
         return newTyping;
       });
-      
+
       if (typingTimeoutRef.current.has(key)) {
         clearTimeout(typingTimeoutRef.current.get(key));
         typingTimeoutRef.current.delete(key);
@@ -142,13 +157,13 @@ export const SocketProvider = ({ children }) => {
     });
 
     // Online status updates
-    newSocket.on('friend-status-change', (data) => {
-      setOnlineUsers(prev => {
+    newSocket.on("friend-status-change", (data) => {
+      setOnlineUsers((prev) => {
         const newOnlineUsers = new Map(prev);
         if (data.isOnline) {
           newOnlineUsers.set(data.userId, {
             userId: data.userId,
-            lastSeen: data.lastSeen
+            lastSeen: data.lastSeen,
           });
         } else {
           newOnlineUsers.delete(data.userId);
@@ -158,14 +173,14 @@ export const SocketProvider = ({ children }) => {
     });
 
     // Read receipts
-    newSocket.on('messages-read', (data) => {
-      window.dispatchEvent(new CustomEvent('messages-read', { detail: data }));
+    newSocket.on("messages-read", (data) => {
+      window.dispatchEvent(new CustomEvent("messages-read", { detail: data }));
     });
 
     // Error handling
-    newSocket.on('error', (error) => {
-      console.error('Socket error:', error);
-      toast.error(error.message || 'Socket error occurred');
+    newSocket.on("error", (error) => {
+      console.error("Socket error:", error);
+      toast.error(error.message || "Socket error occurred");
     });
 
     setSocket(newSocket);
@@ -179,7 +194,7 @@ export const SocketProvider = ({ children }) => {
     if (reconnectTimeoutRef.current) return;
 
     reconnectTimeoutRef.current = setTimeout(() => {
-      console.log('🔄 Attempting to reconnect...');
+      console.log("🔄 Attempting to reconnect...");
       if (socketInstance && !socketInstance.connected) {
         socketInstance.connect();
       }
@@ -192,7 +207,7 @@ export const SocketProvider = ({ children }) => {
    */
   const joinChat = (chatId) => {
     if (socket && connected) {
-      socket.emit('join-chat', { chatId });
+      socket.emit("join-chat", { chatId });
     }
   };
 
@@ -201,7 +216,7 @@ export const SocketProvider = ({ children }) => {
    */
   const leaveChat = (chatId) => {
     if (socket && connected) {
-      socket.emit('leave-chat', { chatId });
+      socket.emit("leave-chat", { chatId });
     }
   };
 
@@ -210,10 +225,10 @@ export const SocketProvider = ({ children }) => {
    */
   const sendMessage = (chatId, content, replyTo = null) => {
     if (socket && connected) {
-      socket.emit('send-message', {
+      socket.emit("send-message", {
         chatId,
         content,
-        replyTo
+        replyTo,
       });
     }
   };
@@ -224,9 +239,9 @@ export const SocketProvider = ({ children }) => {
   const sendTyping = (chatId, isTyping) => {
     if (socket && connected) {
       if (isTyping) {
-        socket.emit('typing-start', { chatId });
+        socket.emit("typing-start", { chatId });
       } else {
-        socket.emit('typing-stop', { chatId });
+        socket.emit("typing-stop", { chatId });
       }
     }
   };
@@ -236,7 +251,7 @@ export const SocketProvider = ({ children }) => {
    */
   const addReaction = (messageId, emoji) => {
     if (socket && connected) {
-      socket.emit('add-reaction', { messageId, emoji });
+      socket.emit("add-reaction", { messageId, emoji });
     }
   };
 
@@ -245,7 +260,7 @@ export const SocketProvider = ({ children }) => {
    */
   const markMessagesRead = (chatId) => {
     if (socket && connected) {
-      socket.emit('mark-read', { chatId });
+      socket.emit("mark-read", { chatId });
     }
   };
 
@@ -281,7 +296,7 @@ export const SocketProvider = ({ children }) => {
   useEffect(() => {
     if (isAuthenticated && user) {
       const socketInstance = initializeSocket();
-      
+
       return () => {
         if (socketInstance) {
           socketInstance.disconnect();
@@ -319,7 +334,7 @@ export const SocketProvider = ({ children }) => {
     markMessagesRead,
     isUserTyping,
     getTypingUsers,
-    isUserOnline
+    isUserOnline,
   };
 
   return (
@@ -335,7 +350,7 @@ export const SocketProvider = ({ children }) => {
 export const useSocket = () => {
   const context = useContext(SocketContext);
   if (!context) {
-    throw new Error('useSocket must be used within SocketProvider');
+    throw new Error("useSocket must be used within SocketProvider");
   }
   return context;
 };

@@ -1,35 +1,35 @@
-import React, { useState } from 'react';
-import { useChat } from '../../contexts/ChatContext';
-import { 
+import React, { useState } from "react";
+import { useChat } from "../../contexts/ChatContext";
+import {
   EllipsisHorizontalIcon,
   PencilIcon,
   TrashIcon,
   ArrowUturnLeftIcon,
-  FaceSmileIcon
-} from '@heroicons/react/24/outline';
+  FaceSmileIcon,
+} from "@heroicons/react/24/outline";
 
 /**
  * Message Item Component
  * Individual message with reactions, editing, and actions
  */
-const MessageItem = ({ 
-  message, 
-  isOwn, 
-  showAvatar = true, 
+const MessageItem = ({
+  message,
+  isOwn,
+  showAvatar = true,
   showTimestamp = true,
-  isGrouped = false 
+  isGrouped = false,
 }) => {
   const { editMessage, deleteMessage, addReaction } = useChat();
   const [showActions, setShowActions] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
-  const [editText, setEditText] = useState(message.content?.text || '');
+  const [editText, setEditText] = useState(message.content?.text || "");
 
   const formatTime = (dateString) => {
     const date = new Date(dateString);
-    return date.toLocaleTimeString('en-US', { 
-      hour: '2-digit', 
-      minute: '2-digit',
-      hour12: true 
+    return date.toLocaleTimeString("en-US", {
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: true,
     });
   };
 
@@ -39,7 +39,7 @@ const MessageItem = ({
         await editMessage(message._id, editText.trim());
         setIsEditing(false);
       } catch (error) {
-        console.error('Error editing message:', error);
+        console.error("Error editing message:", error);
       }
     } else {
       setIsEditing(false);
@@ -47,11 +47,11 @@ const MessageItem = ({
   };
 
   const handleDelete = async () => {
-    if (window.confirm('Are you sure you want to delete this message?')) {
+    if (window.confirm("Are you sure you want to delete this message?")) {
       try {
         await deleteMessage(message._id, message.chat);
       } catch (error) {
-        console.error('Error deleting message:', error);
+        console.error("Error deleting message:", error);
       }
     }
   };
@@ -60,17 +60,19 @@ const MessageItem = ({
     try {
       await addReaction(message._id, emoji);
     } catch (error) {
-      console.error('Error adding reaction:', error);
+      console.error("Error adding reaction:", error);
     }
   };
 
-  const quickReactions = ['👍', '❤️', '😂', '😮', '😢', '😡'];
+  const quickReactions = ["👍", "❤️", "😂", "😮", "😢", "😡"];
 
   if (message.isDeleted) {
     return (
-      <div className={`flex ${isOwn ? 'justify-end' : 'justify-start'}`}>
+      <div className={`flex ${isOwn ? "justify-end" : "justify-start"}`}>
         <div className="max-w-xs lg:max-w-md px-4 py-2 rounded-lg bg-gray-100 border border-gray-200">
-          <p className="text-gray-500 italic text-sm">This message was deleted</p>
+          <p className="text-gray-500 italic text-sm">
+            This message was deleted
+          </p>
           {showTimestamp && (
             <p className="text-xs text-gray-400 mt-1">
               {formatTime(message.createdAt)}
@@ -82,8 +84,10 @@ const MessageItem = ({
   }
 
   return (
-    <div 
-      className={`group flex items-end space-x-2 ${isOwn ? 'flex-row-reverse space-x-reverse' : ''}`}
+    <div
+      className={`group flex items-end space-x-2 ${
+        isOwn ? "flex-row-reverse space-x-reverse" : ""
+      }`}
       onMouseEnter={() => setShowActions(true)}
       onMouseLeave={() => setShowActions(false)}
     >
@@ -91,8 +95,8 @@ const MessageItem = ({
       {showAvatar && !isOwn && (
         <div className="w-8 h-8 bg-gray-200 rounded-full flex items-center justify-center overflow-hidden flex-shrink-0">
           {message.sender.avatar ? (
-            <img 
-              src={message.sender.avatar} 
+            <img
+              src={message.sender.avatar}
               alt={message.sender.username}
               className="w-full h-full object-cover"
             />
@@ -105,12 +109,14 @@ const MessageItem = ({
       )}
 
       {/* Spacer for grouped messages */}
-      {!showAvatar && !isOwn && (
-        <div className="w-8 flex-shrink-0" />
-      )}
+      {!showAvatar && !isOwn && <div className="w-8 flex-shrink-0" />}
 
       {/* Message content */}
-      <div className={`flex flex-col ${isOwn ? 'items-end' : 'items-start'} max-w-xs lg:max-w-md`}>
+      <div
+        className={`flex flex-col ${
+          isOwn ? "items-end" : "items-start"
+        } max-w-xs lg:max-w-md`}
+      >
         {/* Sender name (for group chats) */}
         {showAvatar && !isOwn && (
           <span className="text-xs text-gray-500 mb-1 px-2">
@@ -119,7 +125,7 @@ const MessageItem = ({
         )}
 
         {/* Message bubble */}
-        <div className={`relative group/message ${isGrouped ? 'mt-1' : ''}`}>
+        <div className={`relative group/message ${isGrouped ? "mt-1" : ""}`}>
           {/* Reply indicator */}
           {message.replyTo && (
             <div className="mb-2 px-3 py-2 bg-gray-50 border-l-4 border-gray-300 rounded-r-lg">
@@ -133,11 +139,13 @@ const MessageItem = ({
           )}
 
           {/* Message content */}
-          <div className={`
+          <div
+            className={`
             message-bubble relative
-            ${isOwn ? 'sent' : 'received'}
-            ${isGrouped ? 'rounded-lg' : ''}
-          `}>
+            ${isOwn ? "sent" : "received"}
+            ${isGrouped ? "rounded-lg" : ""}
+          `}
+          >
             {isEditing ? (
               <div className="space-y-2">
                 <textarea
@@ -147,7 +155,7 @@ const MessageItem = ({
                   rows={1}
                   autoFocus
                   onKeyPress={(e) => {
-                    if (e.key === 'Enter' && !e.shiftKey) {
+                    if (e.key === "Enter" && !e.shiftKey) {
                       e.preventDefault();
                       handleEdit();
                     }
@@ -176,7 +184,7 @@ const MessageItem = ({
                 <p className="text-sm whitespace-pre-wrap break-words">
                   {message.content.text}
                 </p>
-                
+
                 {/* Edit indicator */}
                 {message.isEdited && (
                   <span className="text-xs opacity-70 ml-2">(edited)</span>
@@ -187,13 +195,15 @@ const MessageItem = ({
 
           {/* Message actions */}
           {showActions && !isEditing && (
-            <div className={`
+            <div
+              className={`
               absolute top-0 flex items-center space-x-1 opacity-0 group-hover/message:opacity-100 transition-opacity duration-200
-              ${isOwn ? '-left-20' : '-right-20'}
-            `}>
+              ${isOwn ? "-left-20" : "-right-20"}
+            `}
+            >
               {/* Quick reactions */}
               <button
-                onClick={() => handleReaction('👍')}
+                onClick={() => handleReaction("👍")}
                 className="p-1 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded"
                 title="React"
               >
@@ -264,7 +274,11 @@ const MessageItem = ({
 
         {/* Timestamp */}
         {showTimestamp && (
-          <span className={`text-xs text-gray-400 mt-1 ${isOwn ? 'text-right' : 'text-left'}`}>
+          <span
+            className={`text-xs text-gray-400 mt-1 ${
+              isOwn ? "text-right" : "text-left"
+            }`}
+          >
             {formatTime(message.createdAt)}
           </span>
         )}

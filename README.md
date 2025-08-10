@@ -7,11 +7,13 @@ A modern, real-time chat application built with the MERN stack, featuring Clerk 
 ## Features
 
 ### 🔐 Authentication
+
 - **Clerk Authentication**: Secure user authentication and management
 - **Protected Routes**: Route-level authentication protection
 - **User Profiles**: Complete user profile management
 
 ### 💬 Real-time Chat
+
 - **Instant Messaging**: Real-time message delivery using Socket.IO
 - **Typing Indicators**: See when users are typing
 - **Message Reactions**: React to messages with emojis
@@ -20,12 +22,14 @@ A modern, real-time chat application built with the MERN stack, featuring Clerk 
 - **Group Chats**: Create and manage group conversations
 
 ### 🎨 Modern UI/UX
+
 - **Responsive Design**: Optimized for desktop, tablet, and mobile
 - **Dark/Light Theme**: Toggle between themes
 - **Professional Interface**: Clean, modern design with Tailwind CSS
 - **Accessibility**: WCAG compliant interface elements
 
 ### 🚀 Performance
+
 - **Optimized Build**: Production-ready optimization
 - **Fast Loading**: Efficient code splitting and lazy loading
 - **Real-time Updates**: Instant UI updates for better UX
@@ -34,6 +38,7 @@ A modern, real-time chat application built with the MERN stack, featuring Clerk 
 ## Tech Stack
 
 ### Backend
+
 - **Node.js** - Runtime environment
 - **Express.js** - Web application framework
 - **MongoDB** - Database
@@ -43,6 +48,7 @@ A modern, real-time chat application built with the MERN stack, featuring Clerk 
 - **JWT** - Token-based authentication
 
 ### Frontend
+
 - **React.js** - UI library
 - **Vite** - Build tool and dev server
 - **Tailwind CSS** - Utility-first CSS framework
@@ -84,13 +90,15 @@ Enhanced-Chat-Platform/
 ## Getting Started
 
 ### Prerequisites
-- Node.js 18+ 
+
+- Node.js 18+
 - MongoDB Atlas account
 - Clerk account for authentication
 
 ### Environment Variables
 
 #### Backend (.env)
+
 ```env
 NODE_ENV=development
 PORT=5000
@@ -101,6 +109,7 @@ CORS_ORIGIN=http://localhost:3000
 ```
 
 #### Frontend (.env)
+
 ```env
 VITE_API_URL=http://localhost:5000
 VITE_CLERK_PUBLISHABLE_KEY=your_clerk_publishable_key
@@ -109,12 +118,14 @@ VITE_CLERK_PUBLISHABLE_KEY=your_clerk_publishable_key
 ### Local Development
 
 1. **Clone the repository**
+
    ```bash
    git clone <repository-url>
    cd Enhanced-Chat-Platform
    ```
 
 2. **Backend Setup**
+
    ```bash
    cd backend
    npm install
@@ -122,6 +133,7 @@ VITE_CLERK_PUBLISHABLE_KEY=your_clerk_publishable_key
    ```
 
 3. **Frontend Setup** (in a new terminal)
+
    ```bash
    cd frontend
    npm install
@@ -137,6 +149,7 @@ VITE_CLERK_PUBLISHABLE_KEY=your_clerk_publishable_key
 This application is optimized for deployment on Render.com with the included `render.yaml` configuration.
 
 ### Automatic Deployment
+
 1. Connect your GitHub repository to Render.com
 2. Render will automatically detect the `render.yaml` file
 3. Set up the required environment variables
@@ -145,6 +158,7 @@ This application is optimized for deployment on Render.com with the included `re
 ### Manual Deployment
 
 #### Backend Service
+
 1. Create a new Web Service on Render
 2. Connect your repository
 3. Set build command: `npm install`
@@ -152,6 +166,7 @@ This application is optimized for deployment on Render.com with the included `re
 5. Add environment variables
 
 #### Frontend Service
+
 1. Create a new Static Site on Render
 2. Connect your repository
 3. Set build command: `npm install && npm run build`
@@ -163,6 +178,7 @@ This application is optimized for deployment on Render.com with the included `re
 Set these in your Render.com dashboard:
 
 **Backend:**
+
 - `NODE_ENV=production`
 - `MONGODB_URI` (from MongoDB Atlas)
 - `CLERK_SECRET_KEY` (from Clerk dashboard)
@@ -170,18 +186,21 @@ Set these in your Render.com dashboard:
 - `CORS_ORIGIN` (your frontend URL)
 
 **Frontend:**
+
 - `VITE_API_URL` (your backend service URL)
 - `VITE_CLERK_PUBLISHABLE_KEY` (from Clerk dashboard)
 
 ## Features in Detail
 
 ### Authentication Flow
+
 1. Users sign up/sign in through Clerk
 2. JWT tokens are issued for API authentication
 3. Protected routes ensure secure access
 4. Real-time socket authentication
 
 ### Chat Functionality
+
 - **Create Chats**: Start new conversations with users
 - **Group Chats**: Create group conversations
 - **Real-time Messaging**: Instant message delivery
@@ -192,6 +211,7 @@ Set these in your Render.com dashboard:
 - **File Sharing**: Share images and documents
 
 ### User Experience
+
 - **Responsive Design**: Works on all device sizes
 - **Real-time Updates**: Instant UI updates
 - **Error Handling**: User-friendly error messages
@@ -201,14 +221,17 @@ Set these in your Render.com dashboard:
 ## API Endpoints
 
 ### Authentication
+
 - `POST /api/auth/sync` - Sync user with database
 - `GET /api/auth/me` - Get current user
 
 ### Users
+
 - `GET /api/users/search` - Search users
 - `PUT /api/users/profile` - Update user profile
 
 ### Chats
+
 - `GET /api/chats` - Get user's chats
 - `POST /api/chats` - Create new chat
 - `GET /api/chats/:id` - Get chat details
@@ -216,6 +239,7 @@ Set these in your Render.com dashboard:
 - `DELETE /api/chats/:id` - Delete chat
 
 ### Messages
+
 - `GET /api/messages/:chatId` - Get chat messages
 - `POST /api/messages/:chatId` - Send message
 - `PUT /api/messages/:id` - Update message
@@ -225,6 +249,7 @@ Set these in your Render.com dashboard:
 ### WebSocket Events
 
 #### Client to Server
+
 - `join_chat` - Join a chat room
 - `leave_chat` - Leave a chat room
 - `send_message` - Send a new message
@@ -232,6 +257,7 @@ Set these in your Render.com dashboard:
 - `typing_stop` - Stop typing indicator
 
 #### Server to Client
+
 - `message_received` - New message received
 - `message_updated` - Message was updated
 - `message_deleted` - Message was deleted

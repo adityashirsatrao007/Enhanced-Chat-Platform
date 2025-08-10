@@ -1,11 +1,11 @@
-const http = require('http');
+const http = require("http");
 
 const options = {
-  hostname: 'localhost',
+  hostname: "localhost",
   port: process.env.PORT || 5000,
-  path: '/api/health',
-  method: 'GET',
-  timeout: 2000
+  path: "/api/health",
+  method: "GET",
+  timeout: 2000,
 };
 
 const req = http.request(options, (res) => {
@@ -16,11 +16,11 @@ const req = http.request(options, (res) => {
   }
 });
 
-req.on('error', () => {
+req.on("error", () => {
   process.exit(1);
 });
 
-req.on('timeout', () => {
+req.on("timeout", () => {
   req.destroy();
   process.exit(1);
 });

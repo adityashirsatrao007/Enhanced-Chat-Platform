@@ -1,7 +1,7 @@
-import React, { createContext, useContext, useEffect, useState } from 'react';
-import { useUser } from '@clerk/clerk-react';
-import { authAPI } from '../services/api';
-import toast from 'react-hot-toast';
+import React, { createContext, useContext, useEffect, useState } from "react";
+import { useUser } from "@clerk/clerk-react";
+import { authAPI } from "../services/api";
+import toast from "react-hot-toast";
 
 const AuthContext = createContext({});
 
@@ -24,28 +24,29 @@ export const AuthProvider = ({ children }) => {
       setError(null);
 
       const userData = {
-        email: clerkUserData.emailAddresses[0]?.emailAddress || '',
-        username: clerkUserData.username || 
-                 clerkUserData.emailAddresses[0]?.emailAddress?.split('@')[0] || 
-                 'user',
-        firstName: clerkUserData.firstName || 'User',
-        lastName: clerkUserData.lastName || '',
-        avatar: clerkUserData.imageUrl || '',
-        bio: clerkUserData.publicMetadata?.bio || ''
+        email: clerkUserData.emailAddresses[0]?.emailAddress || "",
+        username:
+          clerkUserData.username ||
+          clerkUserData.emailAddresses[0]?.emailAddress?.split("@")[0] ||
+          "user",
+        firstName: clerkUserData.firstName || "User",
+        lastName: clerkUserData.lastName || "",
+        avatar: clerkUserData.imageUrl || "",
+        bio: clerkUserData.publicMetadata?.bio || "",
       };
 
       const response = await authAPI.syncUser(userData);
-      
+
       if (response.success) {
         setUser(response.data.user);
         return response.data.user;
       } else {
-        throw new Error(response.message || 'Failed to sync user data');
+        throw new Error(response.message || "Failed to sync user data");
       }
     } catch (error) {
-      console.error('Error syncing user data:', error);
+      console.error("Error syncing user data:", error);
       setError(error.message);
-      toast.error('Failed to sync user profile');
+      toast.error("Failed to sync user profile");
       throw error;
     } finally {
       setLoading(false);
@@ -59,15 +60,15 @@ export const AuthProvider = ({ children }) => {
     try {
       setLoading(true);
       const response = await authAPI.getProfile();
-      
+
       if (response.success) {
         setUser(response.data.user);
         return response.data.user;
       } else {
-        throw new Error(response.message || 'Failed to get user profile');
+        throw new Error(response.message || "Failed to get user profile");
       }
     } catch (error) {
-      console.error('Error getting user profile:', error);
+      console.error("Error getting user profile:", error);
       setError(error.message);
       return null;
     } finally {
@@ -82,21 +83,21 @@ export const AuthProvider = ({ children }) => {
     try {
       setLoading(true);
       const response = await authAPI.updateProfile(updates);
-      
+
       if (response.success) {
-        setUser(prevUser => ({
+        setUser((prevUser) => ({
           ...prevUser,
-          ...response.data.user
+          ...response.data.user,
         }));
-        toast.success('Profile updated successfully');
+        toast.success("Profile updated successfully");
         return response.data.user;
       } else {
-        throw new Error(response.message || 'Failed to update profile');
+        throw new Error(response.message || "Failed to update profile");
       }
     } catch (error) {
-      console.error('Error updating profile:', error);
+      console.error("Error updating profile:", error);
       setError(error.message);
-      toast.error(error.message || 'Failed to update profile');
+      toast.error(error.message || "Failed to update profile");
       throw error;
     } finally {
       setLoading(false);
@@ -109,16 +110,16 @@ export const AuthProvider = ({ children }) => {
   const updateStatus = async (isOnline) => {
     try {
       const response = await authAPI.updateStatus(isOnline);
-      
+
       if (response.success && user) {
-        setUser(prevUser => ({
+        setUser((prevUser) => ({
           ...prevUser,
           isOnline: response.data.isOnline,
-          lastSeen: response.data.lastSeen
+          lastSeen: response.data.lastSeen,
         }));
       }
     } catch (error) {
-      console.error('Error updating status:', error);
+      console.error("Error updating status:", error);
       // Don't show toast for status updates as they're frequent
     }
   };
@@ -140,7 +141,7 @@ export const AuthProvider = ({ children }) => {
         try {
           // Try to get existing profile first
           const existingUser = await getCurrentUser();
-          
+
           if (!existingUser) {
             // If no profile exists, sync from Clerk
             await syncUserData(clerkUser);
@@ -150,7 +151,10 @@ export const AuthProvider = ({ children }) => {
           try {
             await syncUserData(clerkUser);
           } catch (syncError) {
-            console.error('Failed to sync user after profile fetch error:', syncError);
+            console.error(
+              "Failed to sync user after profile fetch error:",
+              syncError
+            );
           }
         }
       } else {
@@ -180,12 +184,12 @@ export const AuthProvider = ({ children }) => {
       updateStatus(false);
     };
 
-    document.addEventListener('visibilitychange', handleVisibilityChange);
-    window.addEventListener('beforeunload', handleBeforeUnload);
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+    window.addEventListener("beforeunload", handleBeforeUnload);
 
     return () => {
-      document.removeEventListener('visibilitychange', handleVisibilityChange);
-      window.removeEventListener('beforeunload', handleBeforeUnload);
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+      window.removeEventListener("beforeunload", handleBeforeUnload);
       // Set user as offline when component unmounts
       updateStatus(false);
     };
@@ -201,13 +205,11 @@ export const AuthProvider = ({ children }) => {
     getCurrentUser,
     updateProfile,
     updateStatus,
-    logout
+    logout,
   };
 
   return (
-    <AuthContext.Provider value={contextValue}>
-      {children}
-    </AuthContext.Provider>
+    <AuthContext.Provider value={contextValue}>{children}</AuthContext.Provider>
   );
 };
 
@@ -217,7 +219,7 @@ export const AuthProvider = ({ children }) => {
 export const useAuth = () => {
   const context = useContext(AuthContext);
   if (!context) {
-    throw new Error('useAuth must be used within AuthProvider');
+    throw new Error("useAuth must be used within AuthProvider");
   }
   return context;
 };

@@ -1,11 +1,10 @@
 services:
   - type: web
-    name: enhanced-chat-backend
+    name: enhanced-chat-platform
     env: node
     plan: starter
-    rootDir: ./backend
-    buildCommand: npm install
-    startCommand: node index.js
+    buildCommand: cd backend && npm install && cd ../frontend && npm install && npm run build
+    startCommand: cd backend && npm start
     envVars:
       - key: NODE_ENV
         value: production
@@ -17,22 +16,4 @@ services:
         value: sk_test_p27bDpGSpXgiBRjlTkiFZRimXgoJdn7NIIrDKNd7nQ
       - key: JWT_SECRET
         generateValue: true
-      - key: CORS_ORIGIN
-        value: https://enhanced-chat-frontend.onrender.com
-
-  - type: web
-    name: enhanced-chat-frontend
-    env: static
-    rootDir: ./frontend
-    buildCommand: npm install && npm run build
-    staticPublishPath: ./build
-    envVars:
-      - key: REACT_APP_API_URL
-        value: https://enhanced-chat-backend.onrender.com
-      - key: REACT_APP_CLERK_PUBLISHABLE_KEY
-        value: pk_test_ZnJhbmstYmFzaWxpc2stOTAuY2xlcmsuYWNjb3VudHMuZGV2JA
-    routes:
-      - type: rewrite
-        source: /*
-        destination: /index.html
     user: enhanced_chat_user

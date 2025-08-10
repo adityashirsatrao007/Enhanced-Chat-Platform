@@ -1,4 +1,4 @@
-import React from 'react';
+import React from "react";
 
 /**
  * Typing Indicator Component
@@ -18,10 +18,9 @@ const TypingIndicator = ({ userIds = [] }) => {
           </div>
         </div>
         <span className="text-sm">
-          {userIds.length === 1 
-            ? 'Someone is typing...'
-            : `${userIds.length} people are typing...`
-          }
+          {userIds.length === 1
+            ? "Someone is typing..."
+            : `${userIds.length} people are typing...`}
         </span>
       </div>
 
@@ -31,7 +30,7 @@ const TypingIndicator = ({ userIds = [] }) => {
           align-items: center;
           space-x: 2px;
         }
-        
+
         .typing-dot {
           width: 4px;
           height: 4px;
@@ -39,17 +38,19 @@ const TypingIndicator = ({ userIds = [] }) => {
           border-radius: 50%;
           animation: typing 1.5s infinite;
         }
-        
+
         .typing-dot:nth-child(2) {
           animation-delay: 0.2s;
         }
-        
+
         .typing-dot:nth-child(3) {
           animation-delay: 0.4s;
         }
-        
+
         @keyframes typing {
-          0%, 60%, 100% {
+          0%,
+          60%,
+          100% {
             transform: translateY(0);
           }
           30% {

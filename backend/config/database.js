@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
 
 const connectDB = async () => {
   try {
@@ -9,28 +9,28 @@ const connectDB = async () => {
 
     console.log(`✅ MongoDB Connected: ${conn.connection.host}`);
   } catch (error) {
-    console.error('❌ MongoDB connection error:', error.message);
+    console.error("❌ MongoDB connection error:", error.message);
     process.exit(1);
   }
 };
 
 // Handle connection events
-mongoose.connection.on('disconnected', () => {
-  console.log('🔌 MongoDB disconnected');
+mongoose.connection.on("disconnected", () => {
+  console.log("🔌 MongoDB disconnected");
 });
 
-mongoose.connection.on('reconnected', () => {
-  console.log('🔄 MongoDB reconnected');
+mongoose.connection.on("reconnected", () => {
+  console.log("🔄 MongoDB reconnected");
 });
 
 // Graceful shutdown
-process.on('SIGINT', async () => {
+process.on("SIGINT", async () => {
   try {
     await mongoose.connection.close();
-    console.log('🛑 MongoDB connection closed through app termination');
+    console.log("🛑 MongoDB connection closed through app termination");
     process.exit(0);
   } catch (error) {
-    console.error('Error during MongoDB disconnection:', error);
+    console.error("Error during MongoDB disconnection:", error);
     process.exit(1);
   }
 });

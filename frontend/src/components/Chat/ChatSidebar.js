@@ -1,29 +1,23 @@
-import React, { useState } from 'react';
-import { useChat } from '../../contexts/ChatContext';
-import { useSocket } from '../../contexts/SocketContext';
-import { 
+import React, { useState } from "react";
+import { useChat } from "../../contexts/ChatContext";
+import { useSocket } from "../../contexts/SocketContext";
+import {
   PlusIcon,
   MagnifyingGlassIcon,
   XMarkIcon,
-  ChatBubbleLeftRightIcon
-} from '@heroicons/react/24/outline';
-import LoadingSpinner from '../UI/LoadingSpinner';
+  ChatBubbleLeftRightIcon,
+} from "@heroicons/react/24/outline";
+import LoadingSpinner from "../UI/LoadingSpinner";
 
 /**
  * Chat Sidebar Component
  * Displays list of chats with search functionality
  */
 const ChatSidebar = ({ onNewChat, onCloseSidebar }) => {
-  const { 
-    chats, 
-    currentChat, 
-    selectChat, 
-    loading, 
-    getUnreadCount 
-  } = useChat();
+  const { chats, currentChat, selectChat, loading, getUnreadCount } = useChat();
   const { isUserOnline } = useSocket();
-  
-  const [searchTerm, setSearchTerm] = useState('');
+
+  const [searchTerm, setSearchTerm] = useState("");
   const [filteredChats, setFilteredChats] = useState([]);
 
   // Filter chats based on search term
@@ -31,12 +25,14 @@ const ChatSidebar = ({ onNewChat, onCloseSidebar }) => {
     if (!searchTerm.trim()) {
       setFilteredChats(chats);
     } else {
-      const filtered = chats.filter(chat => {
-        const chatName = chat.name || 
-          (chat.type === 'direct' && chat.participants?.length > 0
-            ? chat.participants.find(p => p.user.username)?.user.username || 'Unknown'
-            : 'Group Chat');
-        
+      const filtered = chats.filter((chat) => {
+        const chatName =
+          chat.name ||
+          (chat.type === "direct" && chat.participants?.length > 0
+            ? chat.participants.find((p) => p.user.username)?.user.username ||
+              "Unknown"
+            : "Group Chat");
+
         return chatName.toLowerCase().includes(searchTerm.toLowerCase());
       });
       setFilteredChats(filtered);
@@ -56,7 +52,7 @@ const ChatSidebar = ({ onNewChat, onCloseSidebar }) => {
     const diffHours = Math.floor(diffMs / 3600000);
     const diffDays = Math.floor(diffMs / 86400000);
 
-    if (diffMins < 1) return 'now';
+    if (diffMins < 1) return "now";
     if (diffMins < 60) return `${diffMins}m`;
     if (diffHours < 24) return `${diffHours}h`;
     if (diffDays < 7) return `${diffDays}d`;
@@ -64,16 +60,16 @@ const ChatSidebar = ({ onNewChat, onCloseSidebar }) => {
   };
 
   const getLastMessage = (chat) => {
-    if (!chat.lastMessage) return 'No messages yet';
-    
+    if (!chat.lastMessage) return "No messages yet";
+
     const message = chat.lastMessage;
-    if (typeof message === 'string') return 'New message';
-    
-    if (message.isDeleted) return 'Message deleted';
-    if (message.content?.type === 'image') return '📷 Image';
-    if (message.content?.type === 'file') return '📎 File';
-    
-    return message.content?.text || 'Message';
+    if (typeof message === "string") return "New message";
+
+    if (message.isDeleted) return "Message deleted";
+    if (message.content?.type === "image") return "📷 Image";
+    if (message.content?.type === "file") return "📎 File";
+
+    return message.content?.text || "Message";
   };
 
   return (
@@ -147,17 +143,24 @@ const ChatSidebar = ({ onNewChat, onCloseSidebar }) => {
             {filteredChats.map((chat) => {
               const isSelected = currentChat?._id === chat._id;
               const unreadCount = getUnreadCount(chat);
-              
+
               // Get other participant for direct chats
-              const otherParticipant = chat.type === 'direct' && chat.participants?.length > 0
-                ? chat.participants.find(p => p.user._id !== chat.creator)?.user
-                : null;
-              
-              const chatName = chat.name || 
-                (otherParticipant ? otherParticipant.fullName || otherParticipant.username : 'Unknown User');
-              
+              const otherParticipant =
+                chat.type === "direct" && chat.participants?.length > 0
+                  ? chat.participants.find((p) => p.user._id !== chat.creator)
+                      ?.user
+                  : null;
+
+              const chatName =
+                chat.name ||
+                (otherParticipant
+                  ? otherParticipant.fullName || otherParticipant.username
+                  : "Unknown User");
+
               const chatAvatar = chat.avatar || otherParticipant?.avatar;
-              const isOnline = otherParticipant ? isUserOnline(otherParticipant._id) : false;
+              const isOnline = otherParticipant
+                ? isUserOnline(otherParticipant._id)
+                : false;
 
               return (
                 <button
@@ -165,9 +168,10 @@ const ChatSidebar = ({ onNewChat, onCloseSidebar }) => {
                   onClick={() => handleChatSelect(chat)}
                   className={`
                     w-full p-3 text-left hover:bg-gray-50 transition-colors duration-200 border-r-2
-                    ${isSelected 
-                      ? 'bg-blue-50 border-blue-500' 
-                      : 'border-transparent'
+                    ${
+                      isSelected
+                        ? "bg-blue-50 border-blue-500"
+                        : "border-transparent"
                     }
                   `}
                 >
@@ -176,8 +180,8 @@ const ChatSidebar = ({ onNewChat, onCloseSidebar }) => {
                     <div className="relative">
                       <div className="w-12 h-12 bg-gray-200 rounded-full flex items-center justify-center overflow-hidden">
                         {chatAvatar ? (
-                          <img 
-                            src={chatAvatar} 
+                          <img
+                            src={chatAvatar}
                             alt={chatName}
                             className="w-full h-full object-cover"
                           />
@@ -190,46 +194,57 @@ const ChatSidebar = ({ onNewChat, onCloseSidebar }) => {
                         )}
                       </div>
                       {/* Online indicator for direct chats */}
-                      {chat.type === 'direct' && otherParticipant && (
-                        <div className={`
+                      {chat.type === "direct" && otherParticipant && (
+                        <div
+                          className={`
                           absolute bottom-0 right-0 w-3 h-3 rounded-full border-2 border-white
-                          ${isOnline ? 'bg-green-400' : 'bg-gray-400'}
-                        `}></div>
+                          ${isOnline ? "bg-green-400" : "bg-gray-400"}
+                        `}
+                        ></div>
                       )}
                     </div>
 
                     {/* Chat Info */}
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center justify-between">
-                        <p className={`
+                        <p
+                          className={`
                           text-sm font-medium truncate
-                          ${isSelected ? 'text-blue-900' : 'text-gray-900'}
-                        `}>
+                          ${isSelected ? "text-blue-900" : "text-gray-900"}
+                        `}
+                        >
                           {chatName}
                         </p>
-                        <span className={`
+                        <span
+                          className={`
                           text-xs
-                          ${isSelected ? 'text-blue-700' : 'text-gray-500'}
-                        `}>
+                          ${isSelected ? "text-blue-700" : "text-gray-500"}
+                        `}
+                        >
                           {formatLastActivity(chat.lastActivity)}
                         </span>
                       </div>
-                      
+
                       <div className="flex items-center justify-between mt-1">
-                        <p className={`
+                        <p
+                          className={`
                           text-sm truncate
-                          ${unreadCount > 0 
-                            ? 'text-gray-900 font-medium' 
-                            : isSelected ? 'text-blue-700' : 'text-gray-500'
+                          ${
+                            unreadCount > 0
+                              ? "text-gray-900 font-medium"
+                              : isSelected
+                              ? "text-blue-700"
+                              : "text-gray-500"
                           }
-                        `}>
+                        `}
+                        >
                           {getLastMessage(chat)}
                         </p>
-                        
+
                         {/* Unread count */}
                         {unreadCount > 0 && (
                           <span className="ml-2 px-2 py-1 bg-blue-600 text-white text-xs rounded-full min-w-[20px] text-center">
-                            {unreadCount > 99 ? '99+' : unreadCount}
+                            {unreadCount > 99 ? "99+" : unreadCount}
                           </span>
                         )}
                       </div>

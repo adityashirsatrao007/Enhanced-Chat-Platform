@@ -22,7 +22,12 @@
   "devDependencies": {
     "nodemon": "^3.0.1"
   },
-  "keywords": ["express", "mongodb", "clerk", "chat"],
+  "keywords": [
+    "express",
+    "mongodb",
+    "clerk",
+    "chat"
+  ],
   "author": "Enhanced Chat Platform",
   "license": "MIT"
 }

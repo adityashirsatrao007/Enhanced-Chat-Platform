@@ -1,14 +1,14 @@
-import React from 'react';
-import { SignInButton, SignUpButton, useAuth } from '@clerk/clerk-react';
-import { useNavigate } from 'react-router-dom';
-import { 
-  ChatBubbleLeftRightIcon, 
-  ShieldCheckIcon, 
+import React from "react";
+import { SignInButton, SignUpButton, useAuth } from "@clerk/clerk-react";
+import { useNavigate } from "react-router-dom";
+import {
+  ChatBubbleLeftRightIcon,
+  ShieldCheckIcon,
   BoltIcon,
   UserGroupIcon,
   DevicePhoneMobileIcon,
-  GlobeAltIcon
-} from '@heroicons/react/24/outline';
+  GlobeAltIcon,
+} from "@heroicons/react/24/outline";
 
 /**
  * Home Page Component
@@ -21,41 +21,47 @@ const HomePage = () => {
   // Redirect if already signed in
   React.useEffect(() => {
     if (isSignedIn) {
-      navigate('/chat');
+      navigate("/chat");
     }
   }, [isSignedIn, navigate]);
 
   const features = [
     {
       icon: ChatBubbleLeftRightIcon,
-      title: 'Real-time Messaging',
-      description: 'Instant messaging with live typing indicators and message delivery status.'
+      title: "Real-time Messaging",
+      description:
+        "Instant messaging with live typing indicators and message delivery status.",
     },
     {
       icon: ShieldCheckIcon,
-      title: 'Secure Authentication',
-      description: 'Protected by Clerk authentication with enterprise-grade security.'
+      title: "Secure Authentication",
+      description:
+        "Protected by Clerk authentication with enterprise-grade security.",
     },
     {
       icon: BoltIcon,
-      title: 'Lightning Fast',
-      description: 'Optimized for performance with instant message delivery and smooth interactions.'
+      title: "Lightning Fast",
+      description:
+        "Optimized for performance with instant message delivery and smooth interactions.",
     },
     {
       icon: UserGroupIcon,
-      title: 'Group Chats',
-      description: 'Create and manage group conversations with multiple participants.'
+      title: "Group Chats",
+      description:
+        "Create and manage group conversations with multiple participants.",
     },
     {
       icon: DevicePhoneMobileIcon,
-      title: 'Responsive Design',
-      description: 'Perfect experience across all devices - desktop, tablet, and mobile.'
+      title: "Responsive Design",
+      description:
+        "Perfect experience across all devices - desktop, tablet, and mobile.",
     },
     {
       icon: GlobeAltIcon,
-      title: 'Global Reach',
-      description: 'Connect with users worldwide with our scalable cloud infrastructure.'
-    }
+      title: "Global Reach",
+      description:
+        "Connect with users worldwide with our scalable cloud infrastructure.",
+    },
   ];
 
   return (
@@ -70,17 +76,13 @@ const HomePage = () => {
                 Enhanced Chat Platform
               </span>
             </div>
-            
+
             <div className="flex items-center space-x-4">
               <SignInButton mode="modal">
-                <button className="btn-ghost">
-                  Sign In
-                </button>
+                <button className="btn-ghost">Sign In</button>
               </SignInButton>
               <SignUpButton mode="modal">
-                <button className="btn-primary">
-                  Get Started
-                </button>
+                <button className="btn-primary">Get Started</button>
               </SignUpButton>
             </div>
           </div>
@@ -94,15 +96,17 @@ const HomePage = () => {
             <h1 className="text-4xl lg:text-6xl font-bold text-gray-900 mb-6">
               Connect, Chat, and
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-purple-600">
-                {' '}Collaborate
+                {" "}
+                Collaborate
               </span>
             </h1>
-            
+
             <p className="text-xl text-gray-600 mb-8 max-w-3xl mx-auto">
-              Experience the future of communication with our modern chat platform. 
-              Built with cutting-edge technology for seamless real-time conversations.
+              Experience the future of communication with our modern chat
+              platform. Built with cutting-edge technology for seamless
+              real-time conversations.
             </p>
-            
+
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <SignUpButton mode="modal">
                 <button className="btn-primary text-lg px-8 py-4">
@@ -130,14 +134,14 @@ const HomePage = () => {
               Everything you need for modern communication
             </h2>
             <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-              Powerful features designed to enhance your chatting experience and 
+              Powerful features designed to enhance your chatting experience and
               keep you connected with what matters most.
             </p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {features.map((feature, index) => (
-              <div 
+              <div
                 key={index}
                 className="group p-6 bg-gray-50 rounded-xl hover:bg-white hover:shadow-lg transition-all duration-300 border border-gray-100"
               >
@@ -147,9 +151,7 @@ const HomePage = () => {
                 <h3 className="text-xl font-semibold text-gray-900 mb-2">
                   {feature.title}
                 </h3>
-                <p className="text-gray-600">
-                  {feature.description}
-                </p>
+                <p className="text-gray-600">{feature.description}</p>
               </div>
             ))}
           </div>
@@ -163,7 +165,8 @@ const HomePage = () => {
             Ready to transform your communication?
           </h2>
           <p className="text-xl text-blue-100 mb-8">
-            Join thousands of users who are already experiencing the future of chat.
+            Join thousands of users who are already experiencing the future of
+            chat.
           </p>
           <SignUpButton mode="modal">
             <button className="bg-white text-blue-600 hover:bg-gray-100 font-semibold px-8 py-4 rounded-lg text-lg transition-colors duration-200">
@@ -183,20 +186,29 @@ const HomePage = () => {
                 Enhanced Chat Platform
               </span>
             </div>
-            
+
             <div className="flex space-x-6 text-gray-400">
-              <a href="#" className="hover:text-white transition-colors duration-200">
+              <a
+                href="#"
+                className="hover:text-white transition-colors duration-200"
+              >
                 Privacy Policy
               </a>
-              <a href="#" className="hover:text-white transition-colors duration-200">
+              <a
+                href="#"
+                className="hover:text-white transition-colors duration-200"
+              >
                 Terms of Service
               </a>
-              <a href="#" className="hover:text-white transition-colors duration-200">
+              <a
+                href="#"
+                className="hover:text-white transition-colors duration-200"
+              >
                 Support
               </a>
             </div>
           </div>
-          
+
           <div className="mt-8 pt-8 border-t border-gray-800 text-center text-gray-400">
             <p>&copy; 2025 Enhanced Chat Platform. All rights reserved.</p>
           </div>

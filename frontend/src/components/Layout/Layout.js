@@ -1,6 +1,6 @@
-import React from 'react';
-import { useAuth } from '../../contexts/AuthContext';
-import Navbar from './Navbar';
+import React from "react";
+import { useAuth } from "../../contexts/AuthContext";
+import Navbar from "./Navbar";
 
 /**
  * Main Layout Component
@@ -20,9 +20,7 @@ const Layout = ({ children }) => {
   return (
     <div className="min-h-screen bg-gray-50">
       <Navbar />
-      <main className="h-screen pt-16">
-        {children}
-      </main>
+      <main className="h-screen pt-16">{children}</main>
     </div>
   );
 };

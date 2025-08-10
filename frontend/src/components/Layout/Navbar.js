@@ -1,12 +1,12 @@
-import React from 'react';
-import { Link, useLocation } from 'react-router-dom';
-import { UserButton } from '@clerk/clerk-react';
-import { useAuth } from '../../contexts/AuthContext';
-import { 
+import React from "react";
+import { Link, useLocation } from "react-router-dom";
+import { UserButton } from "@clerk/clerk-react";
+import { useAuth } from "../../contexts/AuthContext";
+import {
   ChatBubbleLeftRightIcon,
   UserIcon,
-  Cog6ToothIcon
-} from '@heroicons/react/24/outline';
+  Cog6ToothIcon,
+} from "@heroicons/react/24/outline";
 
 /**
  * Navigation Bar Component
@@ -22,23 +22,23 @@ const Navbar = () => {
 
   const navItems = [
     {
-      name: 'Chat',
-      href: '/chat',
+      name: "Chat",
+      href: "/chat",
       icon: ChatBubbleLeftRightIcon,
-      active: isActive('/chat')
+      active: isActive("/chat"),
     },
     {
-      name: 'Profile',
-      href: '/profile',
+      name: "Profile",
+      href: "/profile",
       icon: UserIcon,
-      active: isActive('/profile')
+      active: isActive("/profile"),
     },
     {
-      name: 'Settings',
-      href: '/settings',
+      name: "Settings",
+      href: "/settings",
       icon: Cog6ToothIcon,
-      active: isActive('/settings')
-    }
+      active: isActive("/settings"),
+    },
   ];
 
   return (
@@ -61,9 +61,10 @@ const Navbar = () => {
                 to={item.href}
                 className={`
                   flex items-center px-3 py-2 rounded-lg text-sm font-medium transition-colors duration-200
-                  ${item.active 
-                    ? 'bg-blue-100 text-blue-700' 
-                    : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
+                  ${
+                    item.active
+                      ? "bg-blue-100 text-blue-700"
+                      : "text-gray-600 hover:text-gray-900 hover:bg-gray-100"
                   }
                 `}
               >
@@ -83,11 +84,13 @@ const Navbar = () => {
                     {user.fullName || user.username}
                   </p>
                   <div className="flex items-center justify-end">
-                    <div className={`w-2 h-2 rounded-full mr-1 ${
-                      user.isOnline ? 'bg-green-400' : 'bg-gray-400'
-                    }`}></div>
+                    <div
+                      className={`w-2 h-2 rounded-full mr-1 ${
+                        user.isOnline ? "bg-green-400" : "bg-gray-400"
+                      }`}
+                    ></div>
                     <p className="text-xs text-gray-500">
-                      {user.isOnline ? 'Online' : 'Offline'}
+                      {user.isOnline ? "Online" : "Offline"}
                     </p>
                   </div>
                 </div>
@@ -95,14 +98,14 @@ const Navbar = () => {
             )}
 
             {/* Clerk User Button */}
-            <UserButton 
+            <UserButton
               afterSignOutUrl="/"
               appearance={{
                 elements: {
                   avatarBox: "w-8 h-8",
                   userButtonPopoverCard: "shadow-lg border border-gray-200",
-                  userButtonPopoverActionButton: "hover:bg-gray-100"
-                }
+                  userButtonPopoverActionButton: "hover:bg-gray-100",
+                },
               }}
             />
           </div>
@@ -118,9 +121,10 @@ const Navbar = () => {
               to={item.href}
               className={`
                 flex flex-col items-center py-2 px-3 rounded-lg text-xs font-medium transition-colors duration-200
-                ${item.active 
-                  ? 'text-blue-700' 
-                  : 'text-gray-600 hover:text-gray-900'
+                ${
+                  item.active
+                    ? "text-blue-700"
+                    : "text-gray-600 hover:text-gray-900"
                 }
               `}
             >
