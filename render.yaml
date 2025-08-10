@@ -4,7 +4,7 @@ services:
     env: node
     plan: starter
     buildCommand: cd backend && npm install && cd ../frontend && npm install && npm run build
-    startCommand: cd backend && npm start
+    startCommand: node backend/index.js
     envVars:
       - key: NODE_ENV
         value: production
@@ -16,4 +16,3 @@ services:
         value: sk_test_p27bDpGSpXgiBRjlTkiFZRimXgoJdn7NIIrDKNd7nQ
       - key: JWT_SECRET
         generateValue: true
-    user: enhanced_chat_user
