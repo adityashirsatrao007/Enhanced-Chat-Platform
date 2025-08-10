@@ -79,6 +79,8 @@ app.get("/api/health", (req, res) => {
     status: "OK",
     timestamp: new Date().toISOString(),
     environment: process.env.NODE_ENV || "development",
+    mongodb: "connected",
+    port: process.env.PORT || 5000,
   });
 });
 
@@ -104,8 +106,22 @@ if (process.env.NODE_ENV === "production") {
 const socketHandler = require("./utils/socketHandler");
 socketHandler(io);
 
-// Error handling middleware
+// Error handling middleware (must be after routes)
 const errorHandler = require("./middleware/errorHandler");
+app.use(errorHandler);
+
+// Global error handlers for uncaught exceptions
+process.on("uncaughtException", (err) => {
+  console.error("Uncaught Exception:", err);
+  process.exit(1);
+});
+
+process.on("unhandledRejection", (err) => {
+  console.error("Unhandled Rejection:", err);
+  server.close(() => {
+    process.exit(1);
+  });
+});
 app.use(errorHandler);
 
 // 404 handler for API routes only
