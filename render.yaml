@@ -4,7 +4,7 @@ services:
     env: node
     plan: starter
     buildCommand: cd backend && npm install && cd ../frontend && npm install && npm run build
-    startCommand: node backend/index.js
+    startCommand: cd backend && npm start
     envVars:
       - key: NODE_ENV
         value: production
@@ -14,5 +14,7 @@ services:
         value: mongodb+srv://adityashirsatrao007:DfawDlVQGJJQk2CP@cluster0.2zrpo0h.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0
       - key: CLERK_SECRET_KEY
         value: sk_test_p27bDpGSpXgiBRjlTkiFZRimXgoJdn7NIIrDKNd7nQ
+      - key: CLERK_PUBLISHABLE_KEY
+        value: pk_test_ZnJhbmstYmFzaWxpc2stOTAuY2xlcmsuYWNjb3VudHMuZGV2JA
       - key: JWT_SECRET
         generateValue: true
