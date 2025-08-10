@@ -14,7 +14,6 @@ import HomePage from './pages/HomePage';
 import ChatPage from './pages/ChatPage';
 import ProfilePage from './pages/ProfilePage';
 import SettingsPage from './pages/SettingsPage';
-import LoadingSpinner from './components/UI/LoadingSpinner';
 
 // Check if Clerk publishable key exists
 if (!process.env.REACT_APP_CLERK_PUBLISHABLE_KEY) {
