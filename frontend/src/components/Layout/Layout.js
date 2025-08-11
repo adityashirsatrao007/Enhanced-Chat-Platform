@@ -1,6 +1,7 @@
 import React from "react";
 import { useAuth } from "../../contexts/AuthContext";
 import Navbar from "./Navbar";
+import OrbBackground from "../OrbBackground";
 
 /**
  * Main Layout Component
@@ -18,9 +19,12 @@ const Layout = ({ children }) => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <Navbar />
-      <main className="h-screen pt-16">{children}</main>
+    <div className="min-h-screen bg-gray-50 relative overflow-hidden">
+      <OrbBackground />
+      <div style={{ position: "relative", zIndex: 1 }}>
+        <Navbar />
+        <main className="h-screen pt-16">{children}</main>
+      </div>
     </div>
   );
 };
