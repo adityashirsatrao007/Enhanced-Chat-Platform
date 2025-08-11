@@ -41,7 +41,11 @@ const OrbBackground = ({ style }) => {
       orb.r += orb.dr;
       if (orb.x + orb.r > width || orb.x - orb.r < 0) orb.dx *= -1;
       if (orb.y + orb.r > height || orb.y - orb.r < 0) orb.dy *= -1;
-      if (orb.r > Math.min(width, height) / 2 || orb.r < Math.min(width, height) / 4) orb.dr *= -1;
+      if (
+        orb.r > Math.min(width, height) / 2 ||
+        orb.r < Math.min(width, height) / 4
+      )
+        orb.dr *= -1;
       draw();
       requestAnimationFrame(animate);
     }

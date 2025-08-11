@@ -134,28 +134,47 @@ export const AuthProvider = ({ children }) => {
 
   // Effect to handle Clerk authentication state changes
   useEffect(() => {
+    let timeoutId;
+    
     const handleAuthChange = async () => {
       if (!isLoaded) return;
 
       if (isSignedIn && clerkUser) {
         try {
-          // Try to get existing profile first
-          const existingUser = await getCurrentUser();
+          // Debounce to prevent rapid API calls
+          clearTimeout(timeoutId);
+          timeoutId = setTimeout(async () => {
+            try {
+              // Try to get existing profile first
+              const existingUser = await getCurrentUser();
 
-          if (!existingUser) {
-            // If no profile exists, sync from Clerk
-            await syncUserData(clerkUser);
-          }
+              if (!existingUser) {
+                // If no profile exists, sync from Clerk
+                await syncUserData(clerkUser);
+              }
+            } catch (error) {
+              // If getting profile fails due to rate limiting, wait and retry
+              if (error.message.includes("Too many requests")) {
+                console.warn("Rate limited, waiting 5 seconds before retry...");
+                setTimeout(async () => {
+                  try {
+                    await syncUserData(clerkUser);
+                  } catch (syncError) {
+                    console.error("Failed to sync user after rate limit delay:", syncError);
+                  }
+                }, 5000);
+              } else {
+                // For other errors, try immediate sync
+                try {
+                  await syncUserData(clerkUser);
+                } catch (syncError) {
+                  console.error("Failed to sync user after profile fetch error:", syncError);
+                }
+              }
+            }
+          }, 500); // 500ms debounce
         } catch (error) {
-          // If getting profile fails, try to sync from Clerk
-          try {
-            await syncUserData(clerkUser);
-          } catch (syncError) {
-            console.error(
-              "Failed to sync user after profile fetch error:",
-              syncError
-            );
-          }
+          console.error("Error in auth change handler:", error);
         }
       } else {
         // User is signed out

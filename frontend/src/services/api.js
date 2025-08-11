@@ -13,6 +13,34 @@ const api = axios.create({
   },
 });
 
+// Request deduplication cache
+const pendingRequests = new Map();
+
+// Request interceptor to prevent duplicate requests
+api.interceptors.request.use(
+  (config) => {
+    // Create a unique key for this request
+    const requestKey = `${config.method}:${config.url}:${JSON.stringify(config.data || {})}`;
+    
+    // If this request is already pending, return the existing promise
+    if (pendingRequests.has(requestKey)) {
+      console.log("Preventing duplicate request:", requestKey);
+      return Promise.reject(new Error("Duplicate request prevented"));
+    }
+    
+    // Store this request
+    pendingRequests.set(requestKey, true);
+    
+    // Clean up when request completes
+    config.requestKey = requestKey;
+    
+    return config;
+  },
+  (error) => {
+    return Promise.reject(error);
+  }
+);
+
 // Function to set auth token (to be called from components)
 export const setAuthToken = (token) => {
   if (token) {
@@ -22,17 +50,68 @@ export const setAuthToken = (token) => {
   }
 };
 
+// Function to retry requests with exponential backoff
+const retryRequest = async (originalRequest, retryCount = 0) => {
+  const maxRetries = 3;
+  const baseDelay = 1000; // 1 second
+  
+  if (retryCount >= maxRetries) {
+    throw new Error("Maximum retry attempts exceeded");
+  }
+  
+  const delay = baseDelay * Math.pow(2, retryCount);
+  console.log(`Retrying request in ${delay}ms (attempt ${retryCount + 1}/${maxRetries})`);
+  
+  await new Promise(resolve => setTimeout(resolve, delay));
+  return api.request(originalRequest);
+};
+
 // Response interceptor for error handling
 api.interceptors.response.use(
   (response) => {
+    // Clean up pending request
+    if (response.config?.requestKey) {
+      pendingRequests.delete(response.config.requestKey);
+    }
     return response.data;
   },
-  (error) => {
+  async (error) => {
+    // Clean up pending request
+    if (error.config?.requestKey) {
+      pendingRequests.delete(error.config.requestKey);
+    }
+    
     console.error("API Error:", error);
 
     if (error.response) {
       // Server responded with error status
+      const status = error.response.status;
       const errorMessage = error.response.data?.message || "An error occurred";
+      
+      // Handle specific error types
+      if (status === 429) {
+        console.warn("Rate limit exceeded, implementing retry with backoff...");
+        
+        // Retry the request with exponential backoff
+        try {
+          const retryCount = error.config?.retryCount || 0;
+          error.config.retryCount = retryCount;
+          
+          if (retryCount < 3) {
+            return await retryRequest(error.config, retryCount);
+          }
+        } catch (retryError) {
+          console.error("Retry failed:", retryError);
+        }
+        
+        return Promise.reject(new Error("Too many requests. Please wait a moment and try again."));
+      }
+      
+      if (status === 401) {
+        console.warn("Unauthorized request");
+        return Promise.reject(new Error("Authentication required"));
+      }
+      
       return Promise.reject(new Error(errorMessage));
     } else if (error.request) {
       // Request was made but no response received
